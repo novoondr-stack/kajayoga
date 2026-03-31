@@ -1,0 +1,2506 @@
+:root {
+  --bg: #0f2026;
+  --cream: #eee7d3;
+  --text: #f7fbff;
+  --primary: #26d8d0;
+  --primary-dark: #1db9b2;
+  --shadow-strong: 0 10px 40px rgba(0, 0, 0, 0.45);
+  /* Soft shadow – „mlha“ místo tvrdého stínu */
+  --shadow-soft: 0 20px 40px rgba(120, 53, 15, 0.05);
+  --radius-card: 2rem;
+  /* Pružná transition (spring-like) */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Terakota v textu (nadpisy „Jak to funguje“) – ladí k hero CTA */
+  --terracotta-text: #a84a38;
+  /* Sekce „Proč to funguje“ – jednotné pozadí + hnědé akcenty */
+  --why-heading-brown: #3d2419;
+  --why-frame: rgba(90, 45, 38, 0.38);
+  /* Textové „okno“ v Proč to funguje – lehce průhledné, prosvítá krém */
+  --why-panel-bg: rgba(250, 247, 240, 0.82);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* GSAP ScrollTrigger + scrub: smooth scroll rozbíjí vazbu scroll ↔ animace */
+html.how-gsap-desktop {
+  scroll-behavior: auto;
+}
+
+/* —— Section Reveal: vynoření při scrollu —— */
+html.reveal-js .reveal-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+}
+
+html.reveal-js .reveal-section.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.reveal-js .reveal-section {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* —— Vlastní kurzor: kroužek + lupa nad prvky —— */
+  html.custom-cursor-active body,
+  html.custom-cursor-active body * {
+    cursor: none !important;
+  }
+
+  html.custom-cursor-active a,
+  html.custom-cursor-active button,
+  html.custom-cursor-active input,
+  html.custom-cursor-active [role="button"],
+  html.custom-cursor-active .faq-question {
+    cursor: none !important;
+  }
+
+  .custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 24px;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+  }
+
+  .custom-cursor__circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+    border: 2px solid #6b4a3a;
+    border-radius: 50%;
+    background: transparent;
+    transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .custom-cursor__magnifier {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    margin: -7px 0 0 -7px;
+    color: #6b4a3a;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.34s cubic-bezier(0.22, 1, 0.36, 1), transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .custom-cursor.is-magnifier .custom-cursor__circle {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  .custom-cursor.is-magnifier .custom-cursor__magnifier {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .custom-cursor .custom-cursor__magnifier svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .custom-cursor.is-on-dark .custom-cursor__circle {
+    border-color: #ffffff;
+  }
+
+  .custom-cursor.is-on-dark .custom-cursor__magnifier {
+    color: #ffffff;
+  }
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", Arial, sans-serif;
+  font-weight: 400;
+  color: #1f2937;
+  background: var(--cream);
+  line-height: 1.6;
+  letter-spacing: normal;
+  font-kerning: normal;
+}
+
+.container {
+  width: min(1120px, 92%);
+  margin: 0 auto;
+}
+
+.dream-hero {
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding-top: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  isolation: isolate;
+  --hero-glow-x: 50%;
+  --hero-glow-y: 38%;
+  --hero-glow-opacity: 0;
+}
+
+/* Pozadí zvlášť kvůli filtru – text zůstane ostrý */
+.dream-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url("./hero-panorama.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: left center;
+  transform: translateZ(0);
+  /* „Zaostření“ v CSS jen přibližně: kontrast + jemná sytost (ne rozmazání textu) */
+  filter: contrast(1.14) saturate(1.08) brightness(1.03);
+}
+
+.dream-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle 420px at var(--hero-glow-x) var(--hero-glow-y),
+      rgba(255, 246, 226, 0.14) 0%,
+      rgba(255, 241, 212, 0.09) 34%,
+      rgba(255, 236, 198, 0.045) 58%,
+      rgba(255, 236, 198, 0) 80%
+    ),
+    radial-gradient(
+      circle 250px at var(--hero-glow-x) var(--hero-glow-y),
+      rgba(255, 251, 236, 0.08) 0%,
+      rgba(255, 246, 220, 0.04) 42%,
+      rgba(255, 246, 220, 0) 78%
+    );
+  filter: blur(12px);
+  mix-blend-mode: screen;
+  opacity: var(--hero-glow-opacity);
+  transition: opacity 0.55s ease;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  /* Snový „opar“: jemný blur + tyrkysovo-teplé mlhy + lehká sytost */
+  backdrop-filter: blur(2px) saturate(1.2);
+  -webkit-backdrop-filter: blur(2px) saturate(1.2);
+  background:
+    radial-gradient(ellipse 110% 75% at 50% 12%, rgba(120, 215, 225, 0.32) 0%, transparent 52%),
+    radial-gradient(ellipse 90% 65% at 88% 45%, rgba(255, 195, 160, 0.22) 0%, transparent 48%),
+    linear-gradient(180deg, rgba(238, 231, 211, 0.22) 0%, rgba(18, 45, 52, 0.38) 100%);
+}
+
+.hero-shadows {
+  position: absolute;
+  inset: -28%;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    /* horní okraj */
+    radial-gradient(ellipse 55% 42% at 8% 6%, rgba(32, 18, 12, 0.55) 0%, rgba(32, 18, 12, 0) 68%),
+    radial-gradient(ellipse 50% 38% at 92% 8%, rgba(28, 16, 11, 0.48) 0%, rgba(28, 16, 11, 0) 65%),
+    radial-gradient(ellipse 70% 28% at 50% 0%, rgba(22, 14, 10, 0.35) 0%, rgba(22, 14, 10, 0) 72%),
+    /* boční okraje */
+    radial-gradient(ellipse 32% 55% at 0% 38%, rgba(26, 16, 12, 0.45) 0%, rgba(26, 16, 12, 0) 70%),
+    radial-gradient(ellipse 32% 55% at 100% 42%, rgba(24, 15, 11, 0.42) 0%, rgba(24, 15, 11, 0) 70%),
+    radial-gradient(ellipse 28% 48% at 4% 72%, rgba(30, 18, 13, 0.4) 0%, rgba(30, 18, 13, 0) 68%),
+    radial-gradient(ellipse 28% 48% at 96% 78%, rgba(28, 17, 12, 0.4) 0%, rgba(28, 17, 12, 0) 68%),
+    /* spodní okraj */
+    radial-gradient(ellipse 60% 36% at 12% 96%, rgba(20, 12, 9, 0.38) 0%, rgba(20, 12, 9, 0) 70%),
+    radial-gradient(ellipse 60% 36% at 88% 94%, rgba(22, 14, 10, 0.38) 0%, rgba(22, 14, 10, 0) 70%),
+    /* jemné celkové zatmavení krajů */
+    linear-gradient(115deg, rgba(34, 22, 16, 0.22) 8%, rgba(34, 22, 16, 0) 38%),
+    linear-gradient(295deg, rgba(28, 18, 13, 0.2) 10%, rgba(28, 18, 13, 0) 40%);
+  filter: blur(14px);
+  opacity: 0.94;
+  animation: hero-shadow-drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes hero-shadow-drift {
+  0% {
+    transform: translate3d(-5%, -5%, 0) scale(1.03);
+    opacity: 0.78;
+  }
+
+  50% {
+    transform: translate3d(4%, 2%, 0) scale(1.06);
+    opacity: 0.98;
+  }
+
+  100% {
+    transform: translate3d(-3%, 4%, 0) scale(1.04);
+    opacity: 0.85;
+  }
+}
+
+.dream-content {
+  position: relative;
+  z-index: 4;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 980px;
+  width: 100%;
+  margin-inline: auto;
+  padding: 0.35rem 1rem clamp(2.75rem, 7vh, 4.5rem);
+  gap: 0;
+}
+
+.brand {
+  font-family: "Inter", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: #fff;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+/* Logo úplně nahoře přes celou šířku */
+.brand--hero-top {
+  position: relative;
+  z-index: 3;
+  flex-shrink: 0;
+  margin: 0;
+  /* +1 cm dolů oproti hornímu okraji (včetně safe area) */
+  padding: calc(max(0.45rem, env(safe-area-inset-top)) + 1cm) 0.75rem 0.2rem;
+  text-align: center;
+  width: 100%;
+  font-size: 0.82rem;
+  letter-spacing: 0.2em;
+}
+
+h1 {
+  margin: clamp(0.85rem, 4vh, 2.75rem) 0 1.05rem;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(3.25rem, 11.5vw, 7.75rem);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 0.98;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.04em;
+}
+
+.h1-line {
+  display: block;
+}
+
+.h1-letter {
+  display: inline-block;
+  transform: scale(1);
+  transform-origin: center bottom;
+  transition: transform 0.42s var(--ease-out);
+  will-change: transform;
+}
+
+.h1-letter:hover {
+  transform: scale(1.12);
+}
+
+.dream-content h1 {
+  color: #ffffff;
+}
+
+h2 {
+  margin: 0 0 18px;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(2.75rem, 7vw, 5rem);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #0f172a;
+}
+
+h3 {
+  margin-top: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.25;
+  color: #14b8a6;
+}
+
+.subtitle {
+  margin: 0;
+  color: #f1f5f9;
+  font-size: clamp(1.02rem, 2.1vw, 1.35rem);
+  font-family: "Inter", sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  line-height: 1.55;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
+}
+
+.dream-content .subtitle + .subtitle {
+  margin-top: 0.15rem;
+}
+
+.dream-content h1 + .subtitle {
+  margin-top: 0.85rem;
+}
+
+.btn {
+  display: inline-block;
+  border-radius: 999px;
+  text-decoration: none;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  padding: 12px 22px;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: var(--shadow-strong);
+  margin-top: 14px;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+/* CTA v sekci „Jak to funguje“ – jen terakota, bez pulzu a bez světelného pruhu */
+.btn-flow-cta.btn-primary {
+  background: linear-gradient(165deg, #d4896e 0%, #a84a38 100%);
+  color: #fffdf9;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 6px 22px rgba(55, 22, 14, 0.35);
+  transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-flow-cta.btn-primary:hover {
+  background: linear-gradient(165deg, #d9957e 0%, #ae503f 100%);
+  box-shadow: 0 8px 26px rgba(55, 22, 14, 0.38);
+}
+
+/*
+ * Hero CTA – třída .premium-button (viz HTML).
+ * Animace běží od načtení stránky (infinite), ne na :hover.
+ */
+.btn-hero-cta.btn-primary.premium-button {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  isolation: isolate;
+  background: linear-gradient(165deg, #d4896e 0%, #a84a38 100%);
+  color: #fffdf9;
+  /* Bez okraje – žádný bílý lem */
+  border: none;
+  box-shadow: 0 6px 22px rgba(55, 22, 14, 0.35);
+  margin-top: 12px;
+  animation: pulse-gentle 3s ease-in-out infinite;
+  transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-hero-cta__text {
+  position: relative;
+  z-index: 1;
+}
+
+/* Záblesk – běží sám každých 5 s */
+.btn-hero-cta.btn-primary.premium-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 60%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  left: -150%;
+  animation: shine-sweep 5s infinite ease-in-out;
+}
+
+/* Hover jen zvýrazní – animace dál běží (pulz je přes stín, ne transform) */
+.btn-hero-cta.btn-primary.premium-button:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+  background: linear-gradient(165deg, #d9957e 0%, #ae503f 100%);
+  box-shadow: 0 8px 28px rgba(55, 22, 14, 0.42);
+}
+
+/*
+ * 1. Jemný „dech“ – pulz přes stín (ne transform), aby nekolizoval s :hover scale(1.1).
+ */
+@keyframes pulse-gentle {
+  0%,
+  100% {
+    box-shadow: 0 6px 22px rgba(55, 22, 14, 0.35);
+  }
+
+  50% {
+    box-shadow:
+      0 10px 38px rgba(55, 22, 14, 0.48),
+      0 0 28px rgba(255, 210, 185, 0.22);
+  }
+}
+
+/* 2. Záblesk – přejezd, pak pauza (start mimo tlačítko) */
+@keyframes shine-sweep {
+  0% {
+    left: -150%;
+  }
+
+  20% {
+    left: 100%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-hero-cta.btn-primary.premium-button {
+    animation: none;
+  }
+
+  .btn-hero-cta.btn-primary.premium-button::after {
+    display: none;
+  }
+}
+
+.price-block {
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+
+.old-price {
+  margin: 0;
+  font-size: 1.12rem;
+  color: #e9f2f6;
+  text-decoration: line-through;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.new-price {
+  margin: 2px 0 0;
+  font-family: "Inter", sans-serif;
+  font-size: clamp(1.6rem, 3.1vw, 2.4rem);
+  font-weight: 500;
+  color: #fff;
+  text-shadow: 0 3px 14px rgba(0, 0, 0, 0.45);
+}
+
+.discount {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #d8feff;
+}
+
+.section {
+  padding: 58px 0;
+  background: var(--cream);
+}
+
+.section.alt {
+  background: #e5e0d0;
+}
+
+/* —— Proč to funguje: dva 50/50 bloky, jednotné pozadí jako zbytek stránky —— */
+.section.alt.section--why {
+  background: var(--cream);
+}
+
+.section--why {
+  padding: clamp(3rem, 8vw, 5rem) 0;
+  /* o vlásek blíž k sekci nad ní */
+  margin-top: -0.35rem;
+}
+
+.why-steps-wrap {
+  max-width: 1120px;
+  margin-inline: auto;
+}
+
+.why-title {
+  color: var(--terracotta-text);
+  margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+  text-align: center;
+}
+
+.why-steps {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.why-split {
+  display: grid;
+  /* Více místa textu, užší sloupec pro fotku – řádek jedna výška = obě poloviny */
+  grid-template-columns: 1.18fr 0.82fr;
+  align-items: stretch;
+  min-height: min(360px, 48vh);
+  padding-block: 0;
+  border: 1px solid var(--why-frame);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--cream);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Druhý blok: fotka vlevo užší */
+.why-split--reverse {
+  grid-template-columns: 0.82fr 1.18fr;
+}
+
+.why-split__text {
+  align-self: stretch;
+  background: var(--why-panel-bg);
+  padding: clamp(2rem, 5vw, 3.25rem) clamp(1.75rem, 4.5vw, 2.85rem);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+}
+
+/* Ikona ve stylu „Jak to funguje“ – tenký tah, terakota */
+.why-icon {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+  color: var(--terracotta-text);
+}
+
+.why-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  stroke: currentColor;
+  fill: none;
+}
+
+.why-split__heading {
+  margin: 0 0 1rem;
+  font-family: "Oswald", "Barlow Condensed", sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.6rem, 2.8vw, 2.1rem);
+  line-height: 1.08;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  /* Stejná terakota jako nadpis „Proč to funguje“ */
+  color: var(--terracotta-text);
+}
+
+.why-split__body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 300;
+  font-size: clamp(1.02rem, 1.65vw, 1.12rem);
+  line-height: 1.78;
+  letter-spacing: 0.01em;
+  color: var(--terracotta-text);
+  max-width: 42ch;
+}
+
+/* Sloupec fotky = stejný obdélník jako bílé okno – fotka vyplní celou plochu */
+.why-split__photo {
+  margin: 0;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  align-self: stretch;
+  padding: 0;
+  background: var(--cream);
+  isolation: isolate;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+/* Svislá čára mezi textem a fotkou */
+.why-split:not(.why-split--reverse) .why-split__photo {
+  border-left: 1px solid rgba(168, 74, 56, 0.28);
+}
+
+.why-split--reverse .why-split__photo {
+  border-right: 1px solid rgba(168, 74, 56, 0.28);
+}
+
+/* Jemná „filmová“ atmosféra: vigneta + teplý nádech */
+.why-split__photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse 90% 75% at 50% 40%, transparent 20%, rgba(35, 28, 24, 0.2) 100%),
+    linear-gradient(
+      165deg,
+      rgba(255, 248, 235, 0.25) 0%,
+      transparent 45%,
+      rgba(55, 40, 35, 0.08) 100%
+    );
+  mix-blend-mode: multiply;
+}
+
+/* Jemný „Ken Burns“: lehké přiblížení + posun a zpět (dlouhý, nenápadný cyklus) */
+@keyframes why-photo-drift-a {
+  0%,
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.06) translate(-2.2%, 1.4%);
+  }
+}
+
+@keyframes why-photo-drift-b {
+  0%,
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.06) translate(2%, -1.8%);
+  }
+}
+
+.why-split__photo:hover img {
+  transform: scale(1.03);
+}
+
+.why-split__photo img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s var(--ease-out);
+  object-fit: cover;
+  object-position: center center;
+  border-radius: 0;
+  box-shadow: none;
+  filter: brightness(0.96) contrast(1.04) saturate(0.92);
+  transform-origin: center center;
+  animation: why-photo-drift-a 24s ease-in-out infinite;
+}
+
+.why-split--reverse .why-split__photo img {
+  animation-name: why-photo-drift-b;
+  animation-duration: 26s;
+  animation-delay: -13s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .why-split__photo::after {
+    opacity: 0.85;
+  }
+
+  .why-split__photo img {
+    animation: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .why-split,
+  .why-split--reverse {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .why-split:not(.why-split--reverse) .why-split__photo,
+  .why-split--reverse .why-split__photo {
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid rgba(168, 74, 56, 0.22);
+    aspect-ratio: 4 / 3;
+    min-height: 220px;
+    height: auto;
+  }
+
+  .why-split__photo img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .why-split__body {
+    max-width: none;
+  }
+}
+
+.cards {
+  display: grid;
+  gap: 16px;
+}
+
+.cards.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.card {
+  background: var(--cream);
+  border: 1px solid #e6e8ec;
+  border-radius: 20px;
+}
+
+.card {
+  padding: 20px;
+  text-align: center;
+}
+
+.card p {
+  font-family: "Inter", sans-serif;
+  font-weight: 300;
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+  color: #475569;
+}
+
+.how-section {
+  background: var(--cream);
+  /* Vzduch od hero / od sousedních sekcí + uvnitř bloku */
+  margin-top: clamp(3rem, 8vw, 5.5rem);
+  margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
+  padding: clamp(4rem, 10vw, 6.5rem) clamp(1rem, 4vw, 2rem)
+    clamp(4.5rem, 11vw, 7rem);
+}
+
+.how-wrap {
+  max-width: 520px;
+  margin-inline: auto;
+}
+
+.how-section__sticky {
+  position: relative;
+  top: auto;
+  z-index: 15;
+  padding: 0.35rem 0 clamp(1rem, 3vw, 1.5rem);
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+  background: transparent;
+}
+
+/* GSAP pin dává rodiči transform — sticky uvnitř pak „nelepí“ k viewportu správně a cesty/karty se vizuálně rozcházejí */
+.how-section--scrolly .how-section__sticky {
+  position: relative;
+  top: auto;
+}
+
+.how-section--scenes {
+  --how-card-radius: 1.35rem;
+}
+
+.how-section--scenes .how-wrap {
+  max-width: 560px;
+}
+
+/* Headline should scroll normally (not pinned) */
+.how-section--scenes .how-section__sticky {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+  width: auto;
+  z-index: 15;
+  pointer-events: auto;
+}
+
+.how-section--scenes .how-section__progress {
+  display: none;
+}
+
+.how-section--scenes .how-section__title-row {
+  justify-content: center;
+  gap: 0.9rem;
+}
+
+.how-section--scenes .how-logo {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  letter-spacing: 0.18em;
+  color: rgba(92, 61, 46, 0.88);
+}
+
+.how-section--scenes .how-section__title-row h2 {
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: clamp(3rem, 9vw, 5.1rem);
+  letter-spacing: 0.1em;
+  color: #a84a38;
+  text-shadow: none;
+  line-height: 0.95;
+}
+
+/* Removed left accent bar */
+
+.how-section--scenes .how-flow {
+  position: relative;
+  width: min(520px, 92vw);
+  margin-inline: auto;
+  padding: 0;
+  gap: 0;
+  min-height: 100vh;
+}
+
+/* Cards are positioned/animated by GSAP in scenes mode */
+.how-section--scenes .how-flow-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  max-width: 520px;
+  width: min(520px, 92vw);
+  border-radius: var(--how-card-radius);
+  padding: 30px 26px;
+  transition: none;
+  will-change: transform, opacity, filter;
+}
+
+.how-section--scenes .how-flow-card::before {
+  display: none;
+}
+
+.how-section--scenes .how-flow-card {
+  transition: opacity 0.35s var(--ease-out), filter 0.35s var(--ease-out), transform 0.35s var(--ease-out);
+}
+
+/* Default: fully visible */
+.how-section--scenes .how-flow-card.is-past {
+  opacity: 1;
+  filter: none;
+}
+
+/* Upcoming cards (below): slightly transparent */
+.how-section--scenes .how-flow-card.is-future {
+  opacity: 0.35;
+  filter: saturate(0.95);
+}
+
+/* Center card waits for hover to fully "pop" */
+.how-section--scenes .how-flow-card.is-current {
+  opacity: 0.35;
+  filter: none;
+}
+
+.how-section--scenes .how-flow-card.is-current.is-hovered {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.02);
+}
+
+.how-section--scenes .how-flow-connector {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(260px, 76vw);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.how-section--scenes .how-flow-connector--intro {
+  display: none;
+}
+
+.how-section--scenes .how-flow-connector.is-visible {
+  opacity: 0.9;
+}
+
+.how-section__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.how-section__progress {
+  display: none;
+  flex-shrink: 0;
+  width: 4px;
+  height: clamp(2.5rem, 8vw, 3.25rem);
+  align-self: stretch;
+  min-height: 2.5rem;
+  border-radius: 999px;
+  background: rgba(168, 74, 56, 0.18);
+  overflow: hidden;
+  position: relative;
+}
+
+.how-section__progress-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, #d4896e 0%, var(--terracotta-text) 100%);
+  transition: height 0.12s linear;
+}
+
+.how-section__title-row h2 {
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.how-logo {
+  text-align: center;
+  color: var(--terracotta-text);
+  margin: 0 0 12px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.how-section h2 {
+  color: var(--terracotta-text);
+  margin-bottom: clamp(2rem, 5vw, 2.75rem);
+}
+
+.how-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Mezery + výška konektorů – vizuálně pořád vzdušné */
+  gap: clamp(12px, 2.5vw, 20px);
+  /* Místo navíc, aby se při zvětšení karet nic neostříhalo */
+  padding-inline: clamp(4px, 2vw, 12px);
+  padding-block: clamp(4px, 1vw, 10px);
+}
+
+/* Čárkovaná klikatá cesta mezi kartami */
+.how-flow-connector {
+  width: min(420px, 100%);
+  height: clamp(48px, 10vw, 72px);
+  flex-shrink: 0;
+  color: var(--terracotta-text);
+  opacity: 0.72;
+}
+
+.how-flow-connector--intro {
+  height: clamp(44px, 9vw, 64px);
+  opacity: 1;
+}
+
+html.how-gsap-desktop .how-flow-connector {
+  color: #5c3d2e;
+  opacity: 1;
+}
+
+html.how-gsap-desktop .how-flow-connector__path {
+  stroke: currentColor;
+  stroke-dasharray: 10 14;
+}
+
+.how-flow-connector svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.how-flow-connector__path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 12 16;
+}
+
+
+/* Prostřední konektor – zrcadlově, aby cesta „křižovala“ */
+.how-flow-connector--flip svg {
+  transform: scaleX(-1);
+}
+
+.how-flow-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin-inline: auto;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--cream);
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+  padding: 36px 32px;
+  text-align: center;
+  transform: scale(1);
+  transform-origin: center center;
+  transition:
+    transform 0.55s cubic-bezier(0.33, 1, 0.32, 1),
+    border-color 0.45s ease,
+    box-shadow 0.45s ease,
+    opacity 0.65s ease;
+}
+
+/* Scroll-journey: karty + vnitřek (how-journey-js; GSAP desktop = translateY) */
+html.how-journey-js.how-gsap-desktop .how-flow-card {
+  opacity: 0;
+  transform: translateY(20px);
+  will-change: opacity, transform;
+  transition: border-color 0.45s ease, box-shadow 0.45s ease;
+}
+
+html.how-journey-js:not(.how-gsap-desktop) .how-flow-card {
+  opacity: 0;
+  transform: scale(0.92);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.34, 1.2, 0.64, 1),
+    border-color 0.45s ease,
+    box-shadow 0.45s ease;
+}
+
+html.how-journey-js .how-flow-card.how-flow-card--revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+html.how-journey-js.how-gsap-desktop .how-flow-card.how-flow-card--revealed {
+  transform: translateY(0);
+}
+
+html.how-journey-js .how-flow-card__inner {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+html.how-journey-js .how-flow-card.how-flow-card--revealed .how-flow-card__inner {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: 0.2s;
+}
+
+/* Desktop scrolly: vnitřek řídí GSAP (scrub) — bez CSS transition, aby nekolidovalo */
+html.how-journey-js.how-gsap-desktop .how-flow-card.how-flow-card--revealed .how-flow-card__inner {
+  transition: none;
+}
+
+/* Mikro-animace ikon po odhalení karty */
+html.how-journey-js .how-flow-card.how-flow-card--revealed .flow-icon--how-0 svg {
+  animation: how-icon-phone 0.65s cubic-bezier(0.34, 1.2, 0.64, 1) 0.35s both;
+}
+
+html.how-journey-js .how-flow-card.how-flow-card--revealed .flow-icon--how-1 svg {
+  animation: how-icon-mail 0.7s ease 0.35s both;
+}
+
+html.how-journey-js .how-flow-card.how-flow-card--revealed .flow-icon--how-2 svg {
+  animation: how-icon-mat 0.55s ease 0.35s both;
+}
+
+html.how-journey-js .how-flow-card.how-flow-card--revealed .flow-icon--how-3 svg {
+  animation: how-icon-calendar 0.65s cubic-bezier(0.34, 1.2, 0.64, 1) 0.35s both;
+}
+
+@keyframes how-icon-phone {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+
+  20% {
+    transform: translate3d(-2px, 0, 0) rotate(-3deg);
+  }
+
+  40% {
+    transform: translate3d(2px, 0, 0) rotate(3deg);
+  }
+
+  60% {
+    transform: translate3d(-1px, 0, 0) rotate(-2deg);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+}
+
+@keyframes how-icon-mail {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-8deg);
+  }
+
+  50% {
+    transform: rotate(6deg);
+  }
+
+  75% {
+    transform: rotate(-4deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes how-icon-mat {
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.06);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes how-icon-calendar {
+  0% {
+    transform: translateY(0);
+  }
+
+  35% {
+    transform: translateY(-4px);
+  }
+
+  70% {
+    transform: translateY(2px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Poslední karta: pulz záře u CTA po dokončení cesty */
+html.how-journey-js .how-flow-card--final.how-flow-card--cta-active .btn-flow-cta {
+  animation: how-cta-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes how-cta-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 6px 22px rgba(55, 22, 14, 0.35),
+      0 0 0 0 rgba(212, 137, 110, 0.35);
+  }
+
+  50% {
+    box-shadow:
+      0 8px 28px rgba(55, 22, 14, 0.42),
+      0 0 28px rgba(255, 210, 185, 0.45);
+  }
+}
+
+.how-rating {
+  letter-spacing: 0.14em;
+  font-size: 1.1rem !important;
+  color: rgba(168, 74, 56, 0.28);
+  transition: color 0.3s ease;
+}
+
+.how-rating__star {
+  display: inline-block;
+  color: inherit;
+  text-shadow: none;
+  transform: scale(0.85);
+  opacity: 0.35;
+  transition:
+    color 0.25s ease,
+    transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1),
+    opacity 0.25s ease,
+    filter 0.25s ease;
+}
+
+html.how-journey-js .how-rating--lit .how-rating__star {
+  color: #f5b301;
+  opacity: 1;
+  transform: scale(1);
+  filter: drop-shadow(0 0 6px rgba(245, 179, 1, 0.45));
+}
+
+html.how-journey-js .how-rating--lit .how-rating__star:nth-child(1) {
+  transition-delay: 0s;
+}
+
+html.how-journey-js .how-rating--lit .how-rating__star:nth-child(2) {
+  transition-delay: 0.08s;
+}
+
+html.how-journey-js .how-rating--lit .how-rating__star:nth-child(3) {
+  transition-delay: 0.16s;
+}
+
+html.how-journey-js .how-rating--lit .how-rating__star:nth-child(4) {
+  transition-delay: 0.24s;
+}
+
+html.how-journey-js .how-rating--lit .how-rating__star:nth-child(5) {
+  transition-delay: 0.32s;
+}
+
+/* Přejíždějící světlo při hoveru (nad obsahem) */
+.how-flow-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.how-flow-card::before {
+  content: "";
+  position: absolute;
+  inset: -15%;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 34%,
+    rgba(255, 255, 255, 0.82) 50%,
+    rgba(255, 255, 255, 0) 66%,
+    transparent 100%
+  );
+  transform: translateX(-130%) skewX(-14deg);
+  opacity: 0;
+  transition:
+    transform 0.75s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.4s ease;
+  /* Světlo „na“ kartě, ne stín pod ní */
+  mix-blend-mode: overlay;
+}
+
+.how-flow-card:hover,
+.how-flow-card:focus-within {
+  border-color: rgba(168, 74, 56, 0.28);
+  /* Teplý „glow“ kolem, ne tmavý drop shadow */
+  box-shadow:
+    0 0 0 1px rgba(255, 230, 210, 0.65),
+    0 0 36px rgba(255, 210, 185, 0.45),
+    0 12px 28px rgba(15, 23, 42, 0.05);
+}
+
+/* Zvětšení při hoveru – bez JS, nebo když je karta už odhalená */
+html:not(.how-journey-js) .how-flow-card:hover,
+html:not(.how-journey-js) .how-flow-card:focus-within,
+html.how-journey-js .how-flow-card.how-flow-card--revealed:hover,
+html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
+  transform: scale(1.045) translateZ(0);
+}
+
+.how-flow-card:hover::before,
+.how-flow-card:focus-within::before {
+  transform: translateX(130%) skewX(-14deg);
+  opacity: 0.92;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .how-flow-card {
+    transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.45s ease;
+  }
+
+  html.how-journey-js .how-flow-card {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  html.how-journey-js .how-flow-card__inner {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  html.how-journey-js .how-flow-card.how-flow-card--revealed .flow-icon--how-0 svg,
+  html.how-journey-js .how-flow-card.how-flow-card--revealed .flow-icon--how-1 svg,
+  html.how-journey-js .how-flow-card.how-flow-card--revealed .flow-icon--how-2 svg,
+  html.how-journey-js .how-flow-card.how-flow-card--revealed .flow-icon--how-3 svg {
+    animation: none !important;
+  }
+
+  html.how-journey-js .how-flow-card--final.how-flow-card--cta-active .btn-flow-cta {
+    animation: none !important;
+  }
+
+  /* Zmenšení zůstane vidět i při reduced motion; jen slabší */
+  html:not(.how-journey-js) .how-flow-card:hover,
+  html:not(.how-journey-js) .how-flow-card:focus-within,
+  html.how-journey-js .how-flow-card.how-flow-card--revealed:hover,
+  html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
+    transform: scale(1.02) translateZ(0);
+  }
+
+  .how-flow-card::before {
+    transition: none;
+    transform: none !important;
+    opacity: 0 !important;
+  }
+
+  .how-flow-card:hover::before,
+  .how-flow-card:focus-within::before {
+    opacity: 0 !important;
+  }
+}
+
+.flow-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  color: var(--terracotta-text);
+  overflow: visible;
+}
+
+.flow-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.how-flow-card p {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 300;
+  color: #475569;
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+  max-width: 38ch;
+  margin-inline: auto;
+}
+
+.flow-cta {
+  margin-top: 22px;
+}
+
+.payment-logos {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px !important;
+}
+
+.payment-logos span {
+  border: 1px solid #c5d0de;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  color: #334155;
+  background: var(--cream);
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.rating {
+  margin-top: 8px !important;
+  color: #f5b301 !important;
+  letter-spacing: 0.14em;
+  font-size: 1.1rem !important;
+}
+
+/* —— Reference: karusel ve stylu FB/IG (pozadí jako zbytek stránky) —— */
+.social-testimonials {
+  padding: 58px 0;
+  margin: 0;
+  background: var(--cream);
+}
+
+.social-testimonials__outer {
+  width: 100%;
+  max-width: 100%;
+  padding: clamp(2rem, 5vw, 3.75rem) clamp(0.75rem, 3vw, 1.5rem);
+  box-sizing: border-box;
+}
+
+.social-testimonials__panel {
+  max-width: 1180px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #fffdf7 0%, #fff9ed 100%);
+  border-radius: var(--radius-card);
+  padding: clamp(1.35rem, 3.5vw, 2.35rem) clamp(1rem, 3vw, 2rem) clamp(1.25rem, 3vw, 1.75rem);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(234, 179, 8, 0.22);
+}
+
+.social-testimonials__head {
+  text-align: left;
+  margin-bottom: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.social-testimonials__stars {
+  display: flex;
+  gap: 0.15rem;
+  margin-bottom: 0.45rem;
+  line-height: 1;
+}
+
+.social-testimonials__star {
+  color: #fbbf24;
+  font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+  text-shadow: 0 1px 0 rgba(180, 120, 0, 0.25);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.08));
+}
+
+.social-testimonials__title {
+  margin: 0;
+  max-width: 22ch;
+  font-family: "Bebas Neue", "Oswald", sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.85rem, 4.2vw, 2.65rem);
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--terracotta-text);
+}
+
+.social-carousel {
+  width: 100%;
+}
+
+.social-carousel__viewport {
+  overflow: hidden;
+  width: 100%;
+  border-radius: 0.35rem;
+  outline: none;
+}
+
+.social-carousel__viewport:focus-visible {
+  box-shadow: 0 0 0 3px rgba(168, 74, 56, 0.35);
+  border-radius: 0.5rem;
+}
+
+.social-carousel__track {
+  --social-carousel-gap: 14px;
+  display: flex;
+  gap: var(--social-carousel-gap);
+  will-change: transform;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .social-carousel__track {
+    transition-duration: 0.01ms;
+  }
+}
+
+.social-post {
+  flex: 0 0 auto;
+  width: var(--social-slide-w, 100%);
+  background: #fff;
+  border-radius: var(--radius-card);
+  border: 1px solid #e7e5e4;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.social-post__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.85rem 0.85rem 0.5rem;
+}
+
+.social-post__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #e7e5e4;
+}
+
+.social-post__head-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.social-post__name-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.social-post__name {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #050505;
+  line-height: 1.2;
+}
+
+.social-post__more {
+  margin: -0.25rem -0.35rem 0 0;
+  padding: 0.25rem;
+  border: none;
+  background: transparent;
+  color: #65676b;
+  border-radius: 50%;
+  cursor: pointer;
+  line-height: 0;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.social-post__more:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #050505;
+}
+
+.social-post__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: #65676b;
+}
+
+.social-post__dot {
+  user-select: none;
+}
+
+.social-post__visibility {
+  display: inline-flex;
+  color: #65676b;
+}
+
+.social-post__text {
+  margin: 0;
+  padding: 0 0.85rem 0.75rem;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #050505;
+}
+
+.social-post__media {
+  margin: 0;
+  background: #f0f2f5;
+  border-top: 1px solid #e4e6eb;
+  border-bottom: 1px solid #e4e6eb;
+  overflow: hidden;
+}
+
+.social-post__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  vertical-align: middle;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.social-post__media:hover img {
+  transform: scale(1.03);
+}
+
+.social-post__footer {
+  padding: 0;
+  margin-top: auto;
+}
+
+.social-post__reactions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+  color: #65676b;
+  border-bottom: 1px solid #e4e6eb;
+}
+
+.social-post__reaction-emoji {
+  letter-spacing: 0.02em;
+}
+
+.social-post__likes {
+  font-weight: 500;
+  color: #65676b;
+}
+
+.social-post__actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+
+.social-post__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.35rem;
+  border: none;
+  background: transparent;
+  font-family: "Inter", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #65676b;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.social-post__action:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: #050505;
+}
+
+.social-post__action-icon {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.social-carousel__bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: clamp(1rem, 2.5vw, 1.35rem);
+  padding-top: 0.15rem;
+}
+
+.social-carousel__bar-spacer {
+  flex: 1;
+}
+
+.social-carousel__nav {
+  display: flex;
+  gap: 0.55rem;
+}
+
+.social-carousel__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(92, 61, 46, 0.2);
+  background: #fff;
+  color: #5c3d2e;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(45, 35, 30, 0.08);
+  transition:
+    transform 0.2s var(--ease-spring),
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.social-carousel__btn:hover:not(:disabled) {
+  background: #fffbeb;
+  border-color: rgba(168, 74, 56, 0.45);
+  color: #a84a38;
+  box-shadow: 0 4px 14px rgba(45, 35, 30, 0.12);
+  transform: scale(1.05);
+}
+
+.social-carousel__btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.social-carousel__btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.social-carousel__btn:focus-visible {
+  outline: 2px solid var(--terracotta-text);
+  outline-offset: 2px;
+}
+
+/* —— Kdo jsem: bez vlastního pozadí – sedí na krémové sekci jako zbytek stránky —— */
+.about-card {
+  display: grid;
+  grid-template-columns: 40% 1fr;
+  grid-template-rows: auto 1fr;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.5rem, 4vw, 2rem) 0;
+  margin: 0 auto;
+  max-width: 900px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.about-card__portrait-wrap {
+  grid-row: 1 / -1;
+  align-self: center;
+}
+
+.about-card__header {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.about-card__body {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.about-card__portrait-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: min(320px, 85%);
+  max-height: min(420px, 55vh);
+}
+
+.about-card__portrait-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.about-card__portrait {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(420px, 55vh);
+  transition: transform 0.5s var(--ease-out);
+}
+
+.about-card__portrait-inner:hover .about-card__portrait {
+  transform: scale(1.03);
+  object-fit: contain;
+  object-position: center center;
+  /* bílé rohy splývají s krémovým pozadím */
+  mix-blend-mode: multiply;
+}
+
+.about-card__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.about-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.about-card__title {
+  margin: 0 0 0.35rem;
+  font-family: "Bebas Neue", "Oswald", sans-serif;
+  font-weight: 400;
+  font-size: clamp(2.65rem, 6vw, 3.6rem);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--terracotta-text);
+}
+
+.about-card__subtitle {
+  margin: 0 0 1.25rem;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5c4a3a;
+}
+
+.about-card__text {
+  margin: 0 0 1.5rem;
+  font-family: "Inter", sans-serif;
+  font-weight: 300;
+  font-size: clamp(1rem, 1.4vw, 1.12rem);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+  color: #475569;
+  max-width: 42ch;
+  text-align: left;
+}
+
+.about-card__link {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--terracotta-text);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1.5px;
+  transition: color 0.2s ease;
+}
+
+.about-card__link:hover {
+  color: #8a3d2e;
+}
+
+/* —— Stats bar: horizontální lišta se statistikami —— */
+.stats-bar {
+  padding: clamp(3.5rem, 10vw, 5.5rem) clamp(1rem, 4vw, 2rem);
+  background: var(--cream);
+}
+
+.stats-bar__inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: clamp(2rem, 6vw, 4rem);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.stats-block {
+  flex: 1;
+  min-width: 180px;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.stats-block__icon {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 0.9rem;
+  color: #78350f;
+}
+
+.stats-block__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.stats-block__number {
+  font-family: "Bebas Neue", "Oswald", sans-serif;
+  font-weight: 400;
+  font-size: clamp(2.5rem, 5.5vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #92400e;
+  margin-bottom: 0.35rem;
+}
+
+.stats-block__label {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #78350f;
+}
+
+@media (max-width: 640px) {
+  .stats-bar__inner {
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  .stats-block {
+    min-width: 100%;
+    max-width: 260px;
+    padding: 1.25rem;
+  }
+}
+
+/* —— Galerie v pohybu: nakloněný marquee, dvě řady —— */
+.gallery-motion {
+  padding: clamp(3rem, 8vw, 5rem) 0;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+.gallery-motion__tilt {
+  transform: rotate(-4deg);
+  transform-origin: center center;
+  width: 100%;
+}
+
+.gallery-motion__row {
+  overflow: hidden;
+  height: 420px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 0;
+}
+
+.gallery-motion__row:last-child {
+  margin-bottom: 0;
+}
+
+.gallery-motion__track {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 20px;
+  align-items: center;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Horní řada: jede DOPRAVA */
+.gallery-motion__row--left .gallery-motion__track {
+  animation: gallery-marquee-right 95s linear infinite;
+}
+
+/* Dolní řada: jede DOLEVA */
+.gallery-motion__row--right .gallery-motion__track {
+  animation: gallery-marquee-left 95s linear infinite;
+}
+
+@keyframes gallery-marquee-left {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-33.333%, 0, 0);
+  }
+}
+
+@keyframes gallery-marquee-right {
+  from {
+    transform: translate3d(-33.333%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.gallery-motion__track img {
+  flex-shrink: 0;
+  height: 420px;
+  width: auto;
+  max-width: none;
+  object-fit: cover;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.gallery-motion__track img:hover {
+  transform: scale(1.03);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-motion__track {
+    animation: none;
+  }
+}
+
+/* —— Registrační sekce: formulář —— */
+.signup-section {
+  background: var(--cream);
+  padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem);
+  margin-top: 0;
+}
+
+.signup-section__inner {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.signup-header {
+  text-align: center;
+  margin-bottom: clamp(2rem, 5vw, 2.75rem);
+}
+
+.signup-title {
+  margin: 0 0 0.75rem;
+  font-family: "Bebas Neue", sans-serif;
+  font-weight: 400;
+  font-size: clamp(2.75rem, 7vw, 5rem);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--terracotta-text);
+}
+
+.signup-subtitle {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 300;
+  font-size: clamp(1rem, 1.8vw, 1.15rem);
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.signup-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #1f2937;
+  background: #fff;
+  border: 1px solid #6b7280;
+  border-radius: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.signup-input::placeholder {
+  color: #9ca3af;
+}
+
+.signup-input:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+}
+
+.signup-price {
+  text-align: center;
+  margin: -0.5rem 0 0;
+}
+
+.signup-price__main {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.signup-price__old {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
+  color: #6b7280;
+  text-decoration: line-through;
+}
+
+.signup-price__note {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+
+.signup-cta {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  border-radius: 9999px;
+  margin: -0.4rem 0 0;
+}
+
+/* CTA zelené/tyrkysové s pulzací a zábleskem */
+.signup-cta.premium-button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(165deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 6px 22px rgba(38, 216, 208, 0.35);
+  animation: pulse-gentle-teal 3s ease-in-out infinite;
+  cursor: pointer;
+}
+
+.signup-cta.premium-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 60%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  left: -150%;
+  animation: shine-sweep 5s infinite ease-in-out;
+}
+
+.signup-cta.premium-button:hover {
+  filter: brightness(1.08);
+}
+
+@keyframes pulse-gentle-teal {
+  0%,
+  100% {
+    box-shadow: 0 6px 22px rgba(38, 216, 208, 0.35);
+  }
+  50% {
+    box-shadow:
+      0 10px 38px rgba(38, 216, 208, 0.5),
+      0 0 28px rgba(38, 216, 208, 0.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signup-cta.premium-button {
+    animation: none;
+  }
+  .signup-cta.premium-button::after {
+    display: none;
+  }
+}
+
+.signup-lottie {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.signup-lottie lottie-player {
+  width: min(400px, 90vw);
+  height: min(400px, 90vw);
+}
+
+.signup-legal {
+  margin: 0.15rem 0 0;
+  font-family: "Inter", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: #6b7280;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.signup-legal a {
+  color: #14b8a6;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.signup-legal a:hover {
+  color: var(--primary-dark);
+}
+
+/* —— FAQ akordeon: Často se ptáte —— */
+.faq-section {
+  background: var(--cream);
+  padding: clamp(4rem, 10vw, 7rem) clamp(1rem, 4vw, 2rem);
+}
+
+.faq-wrap {
+  display: flex;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4rem);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.faq-title {
+  margin: 0;
+  flex-shrink: 0;
+  width: clamp(200px, 35%, 280px);
+  font-family: "Bebas Neue", "Oswald", sans-serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--terracotta-text);
+  text-align: left;
+}
+
+.faq-list {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.faq-item {
+  background: transparent;
+  border: 1px solid rgba(90, 45, 38, 0.15);
+  border-radius: 0;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease-in-out, border-color 0.3s ease-in-out;
+}
+
+.faq-item.is-open {
+  box-shadow: var(--shadow-soft);
+  border-color: rgba(90, 45, 38, 0.25);
+}
+
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border: none;
+  background: transparent;
+  font-family: "Inter", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s var(--ease-spring);
+}
+
+.faq-question:hover {
+  background: rgba(90, 45, 38, 0.04);
+  transform: scale(1.01);
+}
+
+.faq-question:active {
+  transform: scale(0.99);
+}
+
+.faq-question__text {
+  flex: 1;
+}
+
+.faq-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(168, 74, 56, 0.4);
+  transition: transform 0.3s ease-in-out;
+}
+
+.faq-item.is-open .faq-icon {
+  transform: rotate(45deg);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.faq-item.is-open .faq-answer {
+  max-height: 200px;
+}
+
+.faq-answer p {
+  margin: 0;
+  padding: 0 1.5rem 1.25rem 1.5rem;
+  padding-top: 0;
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #6b7280;
+}
+
+.faq-item.is-open .faq-answer p {
+  padding-top: 0.35rem;
+  padding-bottom: 1.25rem;
+}
+
+@media (max-width: 720px) {
+  .faq-wrap {
+    flex-direction: column;
+  }
+
+  .faq-title {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-item,
+  .faq-answer,
+  .faq-icon {
+    transition: none;
+  }
+
+  .btn:hover,
+  .btn:active {
+    transform: none;
+  }
+
+  .about-card__portrait-inner:hover .about-card__portrait,
+  .why-split__photo:hover img,
+  .gallery-motion__track img:hover,
+  .social-post__media:hover img {
+    transform: none;
+  }
+}
+
+@media (max-height: 720px) {
+  .brand--hero-top {
+    font-size: 0.74rem;
+    padding-top: calc(max(0.3rem, env(safe-area-inset-top)) + 0.75cm);
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 8.2vw, 4.85rem);
+    margin-top: 0.35rem;
+  }
+
+  .dream-content {
+    padding-bottom: 0.65rem;
+  }
+
+  .subtitle {
+    font-size: clamp(0.95rem, 1.85vw, 1.15rem);
+    line-height: 1.45;
+  }
+
+  .price-block {
+    margin-top: 6px;
+  }
+}
+
+@media (max-width: 680px) {
+  .dream-content {
+    padding: 0.35rem 0.75rem clamp(2.25rem, 6vh, 3.5rem);
+  }
+
+  .brand--hero-top {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+  }
+}
+
+@media (max-width: 1024px) {
+  .cards.three {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .about-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .about-card__header {
+    order: 1;
+    grid-column: 1;
+    grid-row: auto;
+    align-items: center;
+    text-align: center;
+  }
+
+  .about-card__portrait-wrap {
+    order: 2;
+    grid-row: auto;
+    width: min(300px, 85%);
+    margin-inline: auto;
+    justify-self: center;
+  }
+
+  .about-card__body {
+    order: 3;
+    grid-column: 1;
+    grid-row: auto;
+    align-items: center;
+    text-align: center;
+  }
+
+  .about-card__title,
+  .about-card__subtitle {
+    text-align: center;
+  }
+
+  .about-card__text {
+    max-width: none;
+    text-align: center;
+  }
+
+  .cards.three {
+    grid-template-columns: 1fr;
+  }
+
+  .how-wrap {
+    max-width: 100%;
+  }
+
+  .how-flow-card {
+    padding: 28px 22px;
+  }
+
+  .how-flow-card p {
+    font-size: 1rem;
+  }
+}
