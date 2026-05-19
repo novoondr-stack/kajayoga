@@ -2,7 +2,7 @@
  * Vlastní kurzor: malý tmavě hnědý kroužek, nad prvky/textem jako lupa s malým přiblížením.
  */
 (function markBuild() {
-  const BUILD = "20260331-1";
+  const BUILD = "20260331-5";
   window.__Y_BUILD__ = BUILD;
   try {
     console.log(`[Y] build ${BUILD} loaded`);
@@ -12,6 +12,13 @@
 (function () {
   const cursor = document.getElementById("customCursor");
   if (!cursor) return;
+
+  const canUseCustomCursor = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (!canUseCustomCursor) {
+    cursor.style.display = "none";
+    return;
+  }
+
   const hero = document.querySelector(".dream-hero");
   const heroHeading = document.querySelector(".dream-content h1");
 
@@ -23,7 +30,7 @@
   let cursorX = 0;
   let cursorY = 0;
 
-  const magnifierSelectors = "a, button, input, [role=button], .faq-question, h1, h2, h3, h4, p, span, .how-flow-card, .social-post, .why-split, .about-card, .signup-input, .faq-item, .stats-block, .subtitle, .signup-title, .signup-subtitle, .faq-question__text";
+  const magnifierSelectors = "a, button, input, [role=button], .faq-question, h1, h2, h3, h4, p, span, .how-flow-card, .social-post, .why-split, .bonus-card, .about-card, .signup-input, .faq-item, .stats-block, .subtitle, .signup-title, .signup-subtitle, .faq-question__text";
 
   const zoomSelectors = "a, button, .faq-question, h1, h2, h3, h4, p, span, .subtitle, .signup-title, .signup-subtitle, .faq-question__text, .how-flow-card p, .about-card__text, .stats-block__label";
 
@@ -330,7 +337,7 @@
       });
     }
 
-    ScrollTrigger.create({
+    const scrollTrigger = ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end: () => "+=" + Math.round(Math.max(window.innerHeight * (n * 2.35 + 1.2), 5200)),
@@ -343,49 +350,88 @@
       animation: tl,
     });
 
-    // Headline scrolls normally (no forced top pin)
-
-    return tl;
+    return { tl, scrollTrigger };
   }
 
   function runMobileSimple() {
-    document.documentElement.classList.remove("how-gsap-desktop");
-    section.classList.remove("how-section--scrolly");
+    document.documentElement.classList.remove("how-gsap-desktop", "how-scenes-active");
+    section.classList.remove("how-section--scrolly", "how-section--scenes");
+    cards.forEach((c) => {
+      c.classList.remove("is-current", "is-past", "is-future", "is-hovered");
+    });
+    connectors.forEach((c) => c.classList.remove("is-visible"));
+    if (sticky) gsap.set(sticky, { clearProps: "all" });
     fallbackStatic();
-    gsap.set(cards, { clearProps: "opacity,y" });
-    gsap.set(flow.querySelectorAll(".how-flow-card__inner"), { clearProps: "opacity,y" });
+    gsap.set(cards, { clearProps: "all" });
+    gsap.set(flow.querySelectorAll(".how-flow-card__inner"), { clearProps: "all" });
   }
 
-  // Run the new "scenes" behavior on all viewport sizes.
-  // (Previously mobile used fallbackStatic, which makes it look "unchanged".)
-  let desktopTl = null;
-  try {
-    desktopTl = runDesktopScrolly();
-    requestAnimationFrame(() => {
-      void flow.offsetHeight;
-      ScrollTrigger.refresh(true);
+  const desktopMq = window.matchMedia("(min-width: 900px)");
+  let howScrollTrigger = null;
+  let howTimeline = null;
+
+  function destroyDesktopHow() {
+    if (howScrollTrigger) {
+      howScrollTrigger.kill();
+      howScrollTrigger = null;
+    }
+    if (howTimeline) {
+      howTimeline.kill();
+      howTimeline = null;
+    }
+    ScrollTrigger.getAll().forEach((st) => {
+      if (st.trigger === section) st.kill();
     });
-  } catch (e) {
-    document.documentElement.classList.remove("how-gsap-desktop");
-    section.classList.remove("how-section--scrolly");
-    section.classList.remove("how-section--scenes");
-    fallbackStatic();
   }
+
+  function applyHowMode() {
+    destroyDesktopHow();
+    if (desktopMq.matches) {
+      try {
+        const result = runDesktopScrolly();
+        howTimeline = result.tl;
+        howScrollTrigger = result.scrollTrigger;
+        requestAnimationFrame(() => ScrollTrigger.refresh(true));
+      } catch (e) {
+        document.documentElement.classList.remove("how-gsap-desktop", "how-scenes-active");
+        section.classList.remove("how-section--scrolly", "how-section--scenes");
+        runMobileSimple();
+      }
+    } else {
+      runMobileSimple();
+    }
+  }
+
+  applyHowMode();
 
   let resizeTimer;
   window.addEventListener(
     "resize",
     () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => ScrollTrigger.refresh(), 120);
+      resizeTimer = setTimeout(() => {
+        const wasDesktop = !!howScrollTrigger;
+        const isDesktop = desktopMq.matches;
+        if (wasDesktop !== isDesktop) {
+          applyHowMode();
+        } else if (isDesktop) {
+          ScrollTrigger.refresh(true);
+        }
+      }, 150);
     },
     { passive: true }
   );
 
+  if (typeof desktopMq.addEventListener === "function") {
+    desktopMq.addEventListener("change", applyHowMode);
+  } else if (typeof desktopMq.addListener === "function") {
+    desktopMq.addListener(applyHowMode);
+  }
+
   window.addEventListener("load", () => {
     requestAnimationFrame(() => {
       void flow.offsetHeight;
-      ScrollTrigger.refresh(true);
+      if (desktopMq.matches) ScrollTrigger.refresh(true);
     });
   });
 })();
@@ -398,7 +444,7 @@
   const viewport = document.querySelector(".social-carousel__viewport");
   const prevBtn = document.getElementById("socialCarouselPrev");
   const nextBtn = document.getElementById("socialCarouselNext");
-  if (!track || !viewport || !prevBtn || !nextBtn) return;
+  if (!track || !viewport) return;
 
   const slides = () => Array.from(track.querySelectorAll(".social-post"));
   let index = 0;
@@ -445,6 +491,7 @@
 
   function startAutoplay() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (maxIndex() <= 0) return;
     clearInterval(autoplayTimer);
     autoplayTimer = window.setInterval(advanceAuto, AUTOPLAY_MS);
   }
@@ -466,8 +513,8 @@
     const w = v === 1 ? vw : (vw - g * (v - 1)) / v;
     const offset = index * (w + g);
     track.style.transform = `translate3d(-${offset}px, 0, 0)`;
-    prevBtn.disabled = index <= 0;
-    nextBtn.disabled = index >= maxIndex();
+    if (prevBtn) prevBtn.disabled = index <= 0;
+    if (nextBtn) nextBtn.disabled = index >= maxIndex();
   }
 
   function onResize() {
@@ -476,8 +523,8 @@
     updateTransform();
   }
 
-  prevBtn.addEventListener("click", () => go(-1));
-  nextBtn.addEventListener("click", () => go(1));
+  if (prevBtn) prevBtn.addEventListener("click", () => go(-1));
+  if (nextBtn) nextBtn.addEventListener("click", () => go(1));
 
   viewport.addEventListener("keydown", (e) => {
     if (e.key === "ArrowLeft") {
@@ -615,5 +662,75 @@
       }
     });
   });
+})();
+
+/**
+ * Videotéka v bonus sekci: vertikální scroll mřížky (JS – spolehlivější než CSS % u flexu).
+ */
+(function () {
+  const track = document.querySelector(".bonus-videoteca-wall__track");
+  if (!track) return;
+
+  const sheet = track.querySelector(".bonus-videoteca-wall__sheet");
+  if (!sheet) return;
+
+  let offset = 0;
+  let last = performance.now();
+  let rafId = 0;
+  const pxPerSec = 22;
+
+  function sheetHeight() {
+    return sheet.offsetHeight || sheet.getBoundingClientRect().height;
+  }
+
+  function tick(now) {
+    const h = sheetHeight();
+    if (h > 1) {
+      const dt = Math.min(0.064, (now - last) / 1000);
+      last = now;
+      offset += pxPerSec * dt;
+      if (offset >= h) offset -= h;
+      track.style.transform = "translate3d(0," + -offset + "px,0)";
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function start() {
+    cancelAnimationFrame(rafId);
+    last = performance.now();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const imgs = track.querySelectorAll("img");
+  let pending = imgs.length || 1;
+  const onImgReady = () => {
+    pending -= 1;
+    if (pending <= 0) start();
+  };
+
+  if (imgs.length === 0) {
+    start();
+  } else {
+    imgs.forEach((img) => {
+      if (img.complete) onImgReady();
+      else {
+        img.addEventListener("load", onImgReady, { once: true });
+        img.addEventListener("error", onImgReady, { once: true });
+      }
+    });
+  }
+
+  let resizeT;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(() => {
+      const h = sheetHeight();
+      if (h > 0) offset = offset % h;
+    }, 120);
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(start).catch(start);
+  }
 })();
 

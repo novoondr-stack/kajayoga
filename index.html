@@ -11,10 +11,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@600&family=Inter:wght@300;400;500&family=Oswald:wght@500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@600&family=Inter:wght@300;400;500&family=Oswald:wght@500;600;700&family=Poppins:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20260331-1" />
+    <link rel="stylesheet" href="styles.css?v=20260519-29" />
     <script>
       document.documentElement.classList.add("how-flow-js", "reveal-js");
     </script>
@@ -45,17 +45,16 @@
         <div class="brand brand--hero-top">JÓGA DO EMAILU <span aria-hidden="true">✉</span></div>
         <div class="container dream-content">
           <h1>
-            <span class="h1-line">NEMUSÍŠ NIC HLEDAT.</span>
-            <span class="h1-line">JÓGA SI TĚ NAJDE</span>
-            <span class="h1-line">SAMA</span>
+            <span class="h1-line">ZAČNI ODEBÍRAT JÓGU</span>
+            <span class="h1-line">DO EMAILU A ROZHÝBEJ</span>
+            <span class="h1-line">SVÉ RÁNO</span>
           </h1>
 
           <p class="subtitle">Každé ráno na tebe v emailu bude čekat lekce.</p>
-          <p class="subtitle">Na 5 měsíců máš vyřešeno, co cvičit.</p>
 
           <div class="price-block">
-            <p class="old-price">1 490 Kč</p>
-            <p class="new-price">890 Kč <span class="discount">(-40 %)</span></p>
+            <p class="old-price">399 Kč měsíčně</p>
+            <p class="new-price">199 Kč měsíčně</p>
           </div>
 
           <a class="btn btn-primary btn-hero-cta premium-button" href="#"><span class="btn-hero-cta__text">Chci dostávat každé ráno jógu do emailu</span></a>
@@ -201,7 +200,6 @@
           <h2 class="why-title" id="why-heading">Proč to funguje</h2>
 
           <div class="why-steps">
-            <!-- Blok 1: text vlevo | fotka vpravo -->
             <article class="why-split">
               <div class="why-split__text">
                 <div class="why-icon" aria-hidden="true">
@@ -215,36 +213,57 @@
                     />
                   </svg>
                 </div>
-                <h3 class="why-split__heading">1. Pravidelné lekce</h3>
+                <h3 class="why-split__heading">Každý den se na chvíli zastavíš</h3>
                 <p class="why-split__body">
-                  Každé ráno tě v e-mailu čeká nová, srozumitelná lekce jógy. Krátká,
-                  intenzivní a navržená tak, aby ses cítila skvěle.
+                  Protáhneš tělo, nadechneš se a uděláš něco jen pro sebe.
                 </p>
               </div>
               <figure class="why-split__photo">
-                <img
-                  src="./assets/why-meditace-ruka-koleno.png"
-                  alt="Detail meditace: ruka v mudře na koleni"
-                  width="800"
-                  height="600"
-                  loading="lazy"
-                  decoding="async"
-                />
+                <div class="why-split__photo-zoom">
+                  <img
+                    src="./assets/why-meditace-ruka-koleno.png"
+                    alt="Detail meditace: ruka v mudře na koleni"
+                    width="800"
+                    height="600"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
               </figure>
             </article>
 
-            <!-- Blok 2: fotka vlevo | text vpravo -->
             <article class="why-split why-split--reverse">
               <figure class="why-split__photo">
-                <img
-                  src="./assets/why-anjali-mudra.png"
-                  alt="Anjali mudra – dlaně u srdce při józe"
-                  width="800"
-                  height="600"
-                  loading="lazy"
-                  decoding="async"
-                />
+                <div class="why-split__photo-zoom">
+                  <img
+                    src="./assets/why-anjali-mudra.png"
+                    alt="Anjali mudra – dlaně u srdce při józe"
+                    width="800"
+                    height="600"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
               </figure>
+              <div class="why-split__text">
+                <div class="why-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z"
+                      stroke="currentColor"
+                      stroke-width="1.35"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <h3 class="why-split__heading">Nemusíš nikam chodit</h3>
+                <p class="why-split__body">
+                  Cvičíš doma, v klidu, po svém. Bez srovnání s ostatními.
+                </p>
+              </div>
+            </article>
+
+            <article class="why-split">
               <div class="why-split__text">
                 <div class="why-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -258,16 +277,33 @@
                     />
                   </svg>
                 </div>
-                <h3 class="why-split__heading">2. Vlastní tempo</h3>
+                <h3 class="why-split__heading">Krátce, ale pravidelně</h3>
                 <p class="why-split__body">
-                  Nemusíš nikam spěchat. Všechny lekce si můžeš přehrát kdykoliv. Jóga
-                  čeká na tebe, ne ty na ni.
+                  Jóga, která zapadne do běžného dne – ne která ti ho převrátí naruby.
                 </p>
               </div>
+              <figure class="why-split__photo">
+                <div class="why-split__photo-zoom">
+                  <img
+                    src="./assets/why-joga-plaz.png"
+                    alt="Žena cvičí jógu na pláži – černobílá fotografie"
+                    width="800"
+                    height="600"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </figure>
             </article>
           </div>
+
+
         </div>
       </section>
+
+      <div class="testimonials-cta-wrap reveal-section">
+        <a class="btn btn-primary btn-flow-cta" href="#registrace">Chci ráno cvičit</a>
+      </div>
 
       <section class="social-testimonials reveal-section" aria-labelledby="social-testimonials-heading">
         <div class="social-testimonials__outer">
@@ -298,7 +334,7 @@
                     <header class="social-post__header">
                       <img
                         class="social-post__avatar"
-                        src="https://i.pravatar.cc/128?img=45"
+                        src="./assets/avatar-vera.png?v=2"
                         alt=""
                         width="40"
                         height="40"
@@ -307,7 +343,7 @@
                       />
                       <div class="social-post__head-text">
                         <div class="social-post__name-row">
-                          <span class="social-post__name">Jana Nováková</span>
+                          <span class="social-post__name">Věra K.</span>
                           <button type="button" class="social-post__more" aria-label="Více možností">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                               <circle cx="12" cy="5" r="2" />
@@ -334,12 +370,12 @@
                       </div>
                     </header>
                     <p class="social-post__text">
-                      Holky, díky – jóga v e-mailu je fakt super. Konečně to stíhám ráno před prací, nemusím nic
-                      hledat a mám klid v hlavě. Za mě jedna z nejlepších investic do sebe.
+                      Karolínko, moc děkuji za jógu do emailu. Miluju to. Cvičím denně. Něco je pro mne na ráno
+                      moc rychle, tak si dám protahování a tu rychlejší jógu pak odpoledne. 🫶🫶🫶
                     </p>
                     <div class="social-post__media">
                       <img
-                        src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=900&q=80&auto=format&fit=crop"
+                        src="./assets/review-vera.png"
                         alt="Žena cvičí jógu doma na podložce"
                         width="900"
                         height="600"
@@ -347,42 +383,6 @@
                         decoding="async"
                       />
                     </div>
-                    <footer class="social-post__footer">
-                      <div class="social-post__reactions">
-                        <span class="social-post__reaction-emoji" aria-hidden="true">👍❤️</span>
-                        <span class="social-post__likes">124</span>
-                      </div>
-                      <div class="social-post__actions">
-                        <button type="button" class="social-post__action">
-                          <svg class="social-post__action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path
-                              d="M7 22V11M2 13V20C2 21.1 2.9 22 4 22H17.5C18.9 22 20 20.9 20 19.5V11.5C20 10.1 18.9 9 17.5 9H14L15.5 3.5C15.6 2.8 15.1 2.2 14.4 2.1L14 2C13.4 2 12.8 2.4 12.6 3L11 9H7C5.9 9 5 9.9 5 11V20C5 21.1 5.9 22 7 22Z"
-                              stroke="currentColor"
-                              stroke-width="1.4"
-                              stroke-linejoin="round"
-                            />
-                          </svg>
-                          To se mi líbí
-                        </button>
-                        <button type="button" class="social-post__action">
-                          <svg class="social-post__action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path
-                              d="M21 15a4 4 0 0 1-4 4H8l-5 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"
-                              stroke="currentColor"
-                              stroke-width="1.4"
-                              stroke-linejoin="round"
-                            />
-                          </svg>
-                          Komentovat
-                        </button>
-                        <button type="button" class="social-post__action">
-                          <svg class="social-post__action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M4 12v7a1 1 0 0 0 1 1h5M16 5h5v5M21 4 12 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-                          </svg>
-                          Sdílet
-                        </button>
-                      </div>
-                    </footer>
                   </article>
 
                   <!-- Post 2 -->
@@ -390,7 +390,7 @@
                     <header class="social-post__header">
                       <img
                         class="social-post__avatar"
-                        src="https://i.pravatar.cc/128?img=32"
+                        src="./assets/avatar-eliska.png?v=2"
                         alt=""
                         width="40"
                         height="40"
@@ -399,7 +399,7 @@
                       />
                       <div class="social-post__head-text">
                         <div class="social-post__name-row">
-                          <span class="social-post__name">Petra Křížová</span>
+                          <span class="social-post__name">Eliška</span>
                           <button type="button" class="social-post__more" aria-label="Více možností">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                               <circle cx="12" cy="5" r="2" />
@@ -426,55 +426,19 @@
                       </div>
                     </header>
                     <p class="social-post__text">
-                      Nejvíc oceňuju, že nemusím přemýšlet, co dneska pustit. E-mail přijde, lekce je srozumitelná a
-                      za pár minut mám hotovo. Jednoduchost, která mi změnila návyky.
+                      Vaše lekce jógy jsou úžásné. Cítím se moc dobře a snažím se cvičit každý den, i když mám za
+                      zády dva raubíře. 😄 Děkuji, Eliška
                     </p>
                     <div class="social-post__media">
                       <img
-                        src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=900&q=80&auto=format&fit=crop"
-                        alt="Žena při józe v klidném prostředí"
+                        src="./assets/review-eliska.png"
+                        alt="Žena cvičí jógu doma na podložce"
                         width="900"
                         height="600"
                         loading="lazy"
                         decoding="async"
                       />
                     </div>
-                    <footer class="social-post__footer">
-                      <div class="social-post__reactions">
-                        <span class="social-post__reaction-emoji" aria-hidden="true">👍</span>
-                        <span class="social-post__likes">89</span>
-                      </div>
-                      <div class="social-post__actions">
-                        <button type="button" class="social-post__action">
-                          <svg class="social-post__action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path
-                              d="M7 22V11M2 13V20C2 21.1 2.9 22 4 22H17.5C18.9 22 20 20.9 20 19.5V11.5C20 10.1 18.9 9 17.5 9H14L15.5 3.5C15.6 2.8 15.1 2.2 14.4 2.1L14 2C13.4 2 12.8 2.4 12.6 3L11 9H7C5.9 9 5 9.9 5 11V20C5 21.1 5.9 22 7 22Z"
-                              stroke="currentColor"
-                              stroke-width="1.4"
-                              stroke-linejoin="round"
-                            />
-                          </svg>
-                          To se mi líbí
-                        </button>
-                        <button type="button" class="social-post__action">
-                          <svg class="social-post__action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path
-                              d="M21 15a4 4 0 0 1-4 4H8l-5 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"
-                              stroke="currentColor"
-                              stroke-width="1.4"
-                              stroke-linejoin="round"
-                            />
-                          </svg>
-                          Komentovat
-                        </button>
-                        <button type="button" class="social-post__action">
-                          <svg class="social-post__action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M4 12v7a1 1 0 0 0 1 1h5M16 5h5v5M21 4 12 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-                          </svg>
-                          Sdílet
-                        </button>
-                      </div>
-                    </footer>
                   </article>
 
                   <!-- Post 3 -->
@@ -482,7 +446,7 @@
                     <header class="social-post__header">
                       <img
                         class="social-post__avatar"
-                        src="https://i.pravatar.cc/128?img=47"
+                        src="./assets/avatar-lucie.png?v=2"
                         alt=""
                         width="40"
                         height="40"
@@ -491,7 +455,7 @@
                       />
                       <div class="social-post__head-text">
                         <div class="social-post__name-row">
-                          <span class="social-post__name">Lucie Marešová</span>
+                          <span class="social-post__name">Lucie K.</span>
                           <button type="button" class="social-post__more" aria-label="Více možností">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                               <circle cx="12" cy="5" r="2" />
@@ -518,174 +482,22 @@
                       </div>
                     </header>
                     <p class="social-post__text">
-                      Jsem máma na rodičovské a čas mám rozbitý. Lekci si pustím, až usne malá – pořád je to ten
-                      samý den a pořád je to moje chvilka klidu. Díky za lidský přístup bez tlaku.
+                      Milá Karolíno, díky za vaše lekce. Každý den necvičím, tak 4–5× se k tomu dostanu, někdy ráno,
+                      někdy navečer, jsem taky už starší. Ale baví mě to, mým tempem a hlavně mě to pomáhá, nejenom na
+                      záda a kyčle.
                     </p>
                     <div class="social-post__media">
                       <img
-                        src="https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=900&q=80&auto=format&fit=crop"
-                        alt="Jóga venku na zahradě"
+                        src="./assets/review-lucie.png"
+                        alt="Žena cvičí jógu doma na podložce"
                         width="900"
                         height="600"
                         loading="lazy"
                         decoding="async"
                       />
                     </div>
-                    <footer class="social-post__footer">
-                      <div class="social-post__reactions">
-                        <span class="social-post__reaction-emoji" aria-hidden="true">❤️👍</span>
-                        <span class="social-post__likes">201</span>
-                      </div>
-                      <div class="social-post__actions">
-                        <button type="button" class="social-post__action">
-                          <svg class="social-post__action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path
-                              d="M7 22V11M2 13V20C2 21.1 2.9 22 4 22H17.5C18.9 22 20 20.9 20 19.5V11.5C20 10.1 18.9 9 17.5 9H14L15.5 3.5C15.6 2.8 15.1 2.2 14.4 2.1L14 2C13.4 2 12.8 2.4 12.6 3L11 9H7C5.9 9 5 9.9 5 11V20C5 21.1 5.9 22 7 22Z"
-                              stroke="currentColor"
-                              stroke-width="1.4"
-                              stroke-linejoin="round"
-                            />
-                          </svg>
-                          To se mi líbí
-                        </button>
-                        <button type="button" class="social-post__action">
-                          <svg class="social-post__action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path
-                              d="M21 15a4 4 0 0 1-4 4H8l-5 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"
-                              stroke="currentColor"
-                              stroke-width="1.4"
-                              stroke-linejoin="round"
-                            />
-                          </svg>
-                          Komentovat
-                        </button>
-                        <button type="button" class="social-post__action">
-                          <svg class="social-post__action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M4 12v7a1 1 0 0 0 1 1h5M16 5h5v5M21 4 12 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-                          </svg>
-                          Sdílet
-                        </button>
-                      </div>
-                    </footer>
                   </article>
 
-                  <!-- Post 4 -->
-                  <article class="social-post">
-                    <header class="social-post__header">
-                      <img
-                        class="social-post__avatar"
-                        src="https://i.pravatar.cc/128?img=44"
-                        alt=""
-                        width="40"
-                        height="40"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <div class="social-post__head-text">
-                        <div class="social-post__name-row">
-                          <span class="social-post__name">Eva Horáková</span>
-                          <button type="button" class="social-post__more" aria-label="Více možností">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                              <circle cx="12" cy="5" r="2" />
-                              <circle cx="12" cy="12" r="2" />
-                              <circle cx="12" cy="19" r="2" />
-                            </svg>
-                          </button>
-                        </div>
-                        <div class="social-post__meta">
-                          <time datetime="2024-11-02">2. listopadu 2024</time>
-                          <span class="social-post__dot" aria-hidden="true">·</span>
-                          <span class="social-post__visibility" title="Veřejné">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" />
-                              <path
-                                d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"
-                                stroke="currentColor"
-                                stroke-width="1.5"
-                              />
-                              <circle cx="12" cy="12" r="3" fill="currentColor" />
-                            </svg>
-                          </span>
-                        </div>
-                      </div>
-                    </header>
-                    <p class="social-post__text">
-                      Krátké lekce akorát do rozvrhu – nestíhám hodiny ve studiu, ale tohle držím skoro každý den.
-                      Cítím se líp v těle a mám radost, že to není další věc na seznamu úkolů.
-                    </p>
-                    <div class="social-post__media">
-                      <img
-                        src="https://images.unsplash.com/photo-1490645935967-10de6ba17561?w=900&q=80&auto=format&fit=crop"
-                        alt="Snídaně po cvičení"
-                        width="900"
-                        height="600"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </div>
-                    <footer class="social-post__footer">
-                      <div class="social-post__reactions">
-                        <span class="social-post__reaction-emoji" aria-hidden="true">👍❤️</span>
-                        <span class="social-post__likes">56</span>
-                      </div>
-                      <div class="social-post__actions">
-                        <button type="button" class="social-post__action">
-                          <svg class="social-post__action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path
-                              d="M7 22V11M2 13V20C2 21.1 2.9 22 4 22H17.5C18.9 22 20 20.9 20 19.5V11.5C20 10.1 18.9 9 17.5 9H14L15.5 3.5C15.6 2.8 15.1 2.2 14.4 2.1L14 2C13.4 2 12.8 2.4 12.6 3L11 9H7C5.9 9 5 9.9 5 11V20C5 21.1 5.9 22 7 22Z"
-                              stroke="currentColor"
-                              stroke-width="1.4"
-                              stroke-linejoin="round"
-                            />
-                          </svg>
-                          To se mi líbí
-                        </button>
-                        <button type="button" class="social-post__action">
-                          <svg class="social-post__action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path
-                              d="M21 15a4 4 0 0 1-4 4H8l-5 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"
-                              stroke="currentColor"
-                              stroke-width="1.4"
-                              stroke-linejoin="round"
-                            />
-                          </svg>
-                          Komentovat
-                        </button>
-                        <button type="button" class="social-post__action">
-                          <svg class="social-post__action-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M4 12v7a1 1 0 0 0 1 1h5M16 5h5v5M21 4 12 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-                          </svg>
-                          Sdílet
-                        </button>
-                      </div>
-                    </footer>
-                  </article>
-                </div>
-              </div>
-
-              <div class="social-carousel__bar">
-                <div class="social-carousel__bar-spacer" aria-hidden="true"></div>
-                <div class="social-carousel__nav" role="group" aria-label="Posun reference">
-                  <button
-                    type="button"
-                    class="social-carousel__btn social-carousel__btn--prev"
-                    id="socialCarouselPrev"
-                    aria-label="Předchozí reference"
-                  >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    class="social-carousel__btn social-carousel__btn--next"
-                    id="socialCarouselNext"
-                    aria-label="Další reference"
-                  >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                  </button>
                 </div>
               </div>
             </div>
@@ -711,15 +523,18 @@
             </div>
             <div class="about-card__header">
               <h2 class="about-card__title">Kdo jsem</h2>
-              <p class="about-card__subtitle">Tvoje průvodkyně jóhou</p>
+              <p class="about-card__subtitle">Tvoje průvodkyně jógy</p>
             </div>
             <div class="about-card__body">
               <p class="about-card__text">
-                Ahoj, jsem Karolína – certifikovaná lektorka jógy se zaměřením
-                na vědomý pohyb. Józe se věnuji více než 10 let a pomáhám lidem
-                cvičit jednoduše, pravidelně a bez tlaku.
+                Ahoj, jsem Karolína – certifikovaná lektorka jógy se zaměřením na vědomý pohyb.
+                Józe se věnuji více než 10 let a během této cesty jsem založila seberozvojový
+                projekt Self-optimalizmus, do kterého se zapojilo přes 1000 jogínek.
               </p>
-              <a class="about-card__link" href="#objednat">→ Více o mém příběhu</a>
+              <p class="about-card__text">
+                V rámci tohoto projektu vznikly online programy s cílem podpořit ženy i muže na
+                cestě k větší lehkosti v těle i mysli.
+              </p>
             </div>
           </article>
         </div>
@@ -771,105 +586,244 @@
               <img src="./assets/gallery-4.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-5.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-6.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-7.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-8.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-9.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-10.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-1.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-2.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-3.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-4.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-5.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-6.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-7.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-8.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-9.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-10.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-1.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-2.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-3.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-4.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-5.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-6.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-7.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-8.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-9.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-10.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
             </div>
           </div>
           <div class="gallery-motion__row gallery-motion__row--right">
             <div class="gallery-motion__track">
-              <img src="./assets/gallery-7.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
-              <img src="./assets/gallery-8.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
-              <img src="./assets/gallery-9.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
-              <img src="./assets/gallery-10.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-11.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-12.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
-              <img src="./assets/gallery-7.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
-              <img src="./assets/gallery-8.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
-              <img src="./assets/gallery-9.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
-              <img src="./assets/gallery-10.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-13.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-14.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-15.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-16.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-17.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-18.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-19.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-20.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-11.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-12.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
-              <img src="./assets/gallery-7.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
-              <img src="./assets/gallery-8.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
-              <img src="./assets/gallery-9.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
-              <img src="./assets/gallery-10.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-13.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-14.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-15.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-16.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-17.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-18.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-19.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-20.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-11.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
               <img src="./assets/gallery-12.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-13.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-14.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-15.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-16.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-17.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-18.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-19.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
+              <img src="./assets/gallery-20.png" alt="" width="350" height="420" loading="lazy" decoding="async" />
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Registrační sekce -->
-      <section class="signup-section reveal-section" aria-labelledby="signup-heading">
+      <!-- Registrační sekce + platební formulář -->
+      <section class="signup-section reveal-section" id="registrace" aria-labelledby="signup-heading">
         <div class="signup-section__inner">
           <header class="signup-header">
-            <h2 class="signup-title" id="signup-heading">Už jen krok<br />a zítra ráno máš první lekci</h2>
-            <p class="signup-subtitle">Stačí mi sem hodit tvůj e-mail a já ti osobně napíšu hned, jak vypustím novou lekci.</p>
+            <h2 class="signup-title" id="signup-heading">
+              <span class="signup-title__line">
+                <span class="signup-title__mark">Už</span>
+                <span class="signup-title__word">jen</span>
+                <span class="signup-title__mark">jeden</span>
+                <span class="signup-title__word">krok</span>
+              </span>
+              <span class="signup-title__line">
+                <span class="signup-title__mark">a</span>
+                <span class="signup-title__mark signup-title__mark--invert">zítra</span>
+                <span class="signup-title__word">ráno</span>
+              </span>
+              <span class="signup-title__line">
+                <span class="signup-title__mark">máš</span>
+                <span class="signup-title__mark signup-title__mark--invert">první lekci</span>
+              </span>
+            </h2>
           </header>
 
-          <form class="signup-form" action="#" method="post" novalidate>
-            <input
-              type="text"
-              name="name"
-              id="signup-name"
-              class="signup-input"
-              placeholder="Tvé jméno a příjmení"
-              required
-              autocomplete="name"
-            />
-            <input
-              type="email"
-              name="email"
-              id="signup-email"
-              class="signup-input"
-              placeholder="Tvůj e-mail"
-              required
-              autocomplete="email"
-            />
-            <input
-              type="tel"
-              name="phone"
-              id="signup-phone"
-              class="signup-input"
-              placeholder="Tvé telefonní číslo"
-              autocomplete="tel"
-            />
+          <div class="joga-form-wrapper">
+            <form action="/jogadomailu/prvni-platba.php" method="GET" class="joga-form">
+              <div class="signup-price">
+                <p class="signup-price__old">399 Kč</p>
+                <p class="signup-price__main">199 Kč měsíčně</p>
+                <p class="signup-price__note">≈ 7 Kč denně • Bez závazků</p>
+              </div>
+              <input
+                type="text"
+                name="first_name"
+                id="signup-first-name"
+                placeholder="Jméno"
+                required
+                autocomplete="given-name"
+              />
+              <input
+                type="text"
+                name="surname"
+                id="signup-surname"
+                placeholder="Příjmení"
+                required
+                autocomplete="family-name"
+              />
+              <input
+                type="email"
+                name="email"
+                id="signup-email"
+                placeholder="E-mail"
+                required
+                autocomplete="email"
+              />
+              <button type="submit">Pokračovat k platbě</button>
+              <div class="signup-payments" aria-label="Akceptované platební karty">
+                <img
+                  src="./assets/payment-methods.png?v=1"
+                  alt="Visa, Mastercard, Maestro"
+                  width="259"
+                  height="60"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </form>
+          </div>
 
-            <div class="signup-price">
-              <p class="signup-price__main">890 Kč za 5 měsíců jógy</p>
-              <p class="signup-price__old">1 490 Kč</p>
-              <p class="signup-price__note">≈ 6 Kč denně • Bez předplatného • Bez závazků</p>
+          <p class="signup-legal">
+            <span class="signup-legal__line"
+              >Odesláním souhlasíš s <a href="#">ochranou osobních údajů</a></span
+            >
+            <span class="signup-legal__line">a zpracováním tvých údajů.</span>
+          </p>
+        </div>
+      </section>
+
+      <section class="bonus-section reveal-section" aria-labelledby="bonus-heading">
+        <div class="container bonus-wrap">
+          <header class="bonus-header">
+            <h2 class="bonus-title" id="bonus-heading">
+              <span class="bonus-title__line">Když si objednáš jógu dnes,</span>
+              <span class="bonus-title__accent">získáš 2 bonusy zdarma</span>
+            </h2>
+          </header>
+
+          <div class="bonus-list">
+            <article class="bonus-card">
+              <div class="bonus-card__text">
+                <span class="bonus-badge">Zdarma</span>
+                <h3 class="bonus-card__title">Průvodce pro začátečníky</h3>
+                <p class="bonus-card__body">
+                  PDF průvodce s tipy na domácí praxi – i když s jógou teprve začínáš.
+                </p>
+              </div>
+              <figure class="bonus-card__media bonus-card__media--fit">
+                <img
+                  src="./assets/bonus-ebook-zacatecnici.png?v=2"
+                  alt="E-book Jóga pro začátečníky – AHA momenty, bez kterých to nepůjde"
+                  width="800"
+                  height="800"
+                  loading="eager"
+                  decoding="async"
+                />
+              </figure>
+            </article>
+
+            <article class="bonus-card bonus-card--reverse">
+              <figure class="bonus-card__media bonus-card__media--videoteca" aria-label="Náhled videotéky s mnoha lekcemi">
+                <div class="bonus-videoteca-wall">
+                  <div class="bonus-videoteca-wall__viewport">
+                    <div class="bonus-videoteca-wall__tilt">
+                    <div class="bonus-videoteca-wall__track">
+            <div class="bonus-videoteca-wall__sheet">
+              <img src="./assets/gallery-1.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-2.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-3.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-4.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-5.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-6.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-7.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-8.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-9.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-10.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-11.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-12.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-13.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-14.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-15.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-16.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-17.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-18.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-19.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-20.png" alt="" width="160" height="160" loading="eager" decoding="async" />
             </div>
-
-            <button type="submit" class="btn btn-primary signup-cta premium-button">
-              <span class="btn-hero-cta__text">POKRAČOVAT K PLATBĚ</span>
-            </button>
-
-            <p class="signup-legal">
-              Odesláním souhlasíš s <a href="#">ochranou osobních údajů</a> a zpracováním tvých údajů.
-            </p>
-
-            <div class="signup-lottie" aria-hidden="true">
-              <lottie-player
-                src="./assets/woman-yoga.json"
-                background="transparent"
-                speed="1"
-                loop
-                autoplay
-              ></lottie-player>
+            <div class="bonus-videoteca-wall__sheet" aria-hidden="true">
+              <img src="./assets/gallery-1.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-2.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-3.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-4.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-5.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-6.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-7.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-8.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-9.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-10.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-11.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-12.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-13.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-14.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-15.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-16.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-17.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-18.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-19.png" alt="" width="160" height="160" loading="eager" decoding="async" />
+              <img src="./assets/gallery-20.png" alt="" width="160" height="160" loading="eager" decoding="async" />
             </div>
-          </form>
+                    </div>
+                    </div>
+                  </div>
+                </div>
+              </figure>
+              <div class="bonus-card__text">
+                <span class="bonus-badge">Zdarma</span>
+                <h3 class="bonus-card__title">Videotéka jógy</h3>
+                <p class="bonus-card__body">
+                  Neomezený přístup do videoknihovny s více než 100 lekcemi jógy.
+                </p>
+              </div>
+            </article>
+          </div>
+
+          <div class="bonus-cta-wrap">
+            <a class="btn btn-bonus-cta" href="#registrace">Chci jógu s bonusy</a>
+          </div>
         </div>
       </section>
 
@@ -925,10 +879,9 @@
         </div>
       </section>
     </main>
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js" defer></script>
     <!-- Lokální GSAP = spolehlivé i bez CDN; pořadí: gsap → ScrollTrigger → script -->
     <script src="vendor/gsap.min.js" defer></script>
     <script src="vendor/ScrollTrigger.min.js" defer></script>
-    <script src="script.js?v=20260331-1" defer></script>
+    <script src="script.js?v=20260519-28" defer></script>
   </body>
 </html>
