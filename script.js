@@ -159,9 +159,7 @@
 })();
 
 /**
- * Sekce „Jak to funguje“: GSAP ScrollTrigger + pin + scrub.
- * Krok 1 (desktop): jen postupné „nakreslení“ čar (stroke-dashoffset); karty zůstávají vidět.
- * Mobil: statická plná cesta, bez pinu.
+ * Sekce „Jak to funguje“: statický layout – klasický scroll, bez GSAP pin/scenes.
  */
 (function () {
   const section = document.getElementById("howSection");
@@ -173,267 +171,34 @@
   const progressFill = document.getElementById("howProgressFill");
   const progressTrack = document.getElementById("howProgressTrack");
   const ratingEl = cards[3] ? cards[3].querySelector(".how-rating") : null;
-  const sticky = section.querySelector(".how-section__sticky");
-  const connectors = Array.from(flow.querySelectorAll(".how-flow-connector[data-how-connector]"));
 
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const hasGsap = typeof window.gsap !== "undefined" && typeof window.ScrollTrigger !== "undefined";
+  document.documentElement.classList.remove("how-gsap-desktop", "how-scenes-active");
+  section.classList.remove("how-section--scrolly", "how-section--scenes");
+  section.classList.add("how-section--static");
 
-  document.documentElement.classList.add("how-journey-js");
-
-  function fallbackStatic() {
-    cards.forEach((c) => {
-      c.classList.add("how-flow-card--revealed");
-      if (c.classList.contains("how-flow-card--final")) c.classList.add("how-flow-card--cta-active");
-    });
-    paths.forEach((path) => {
-      path.style.removeProperty("stroke-dasharray");
-      path.style.removeProperty("stroke-dashoffset");
-    });
-    if (progressFill) progressFill.style.height = "100%";
-    if (progressTrack) progressTrack.setAttribute("aria-valuenow", "100");
-    if (ratingEl) ratingEl.classList.add("how-rating--lit");
-  }
-
-  if (reduce || !hasGsap) {
-    fallbackStatic();
-    return;
-  }
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  /* Stejný vzorek jako v CSS (.how-flow-connector__path) — jen offset animujeme, ne celé dasharray = délka cesty (to by dělalo plnou čáru). */
-  const PATH_DASH_PATTERN = "12 16";
-
-  function initPathDash(path) {
-    let len = path.getTotalLength();
-    if (len < 2) {
-      void path.ownerSVGElement?.getBoundingClientRect();
-      len = path.getTotalLength();
+  cards.forEach((c) => {
+    c.classList.remove("is-current", "is-past", "is-future", "is-hovered");
+    c.classList.add("how-flow-card--revealed");
+    c.style.removeProperty("opacity");
+    c.style.removeProperty("transform");
+    if (c.classList.contains("how-flow-card--final")) {
+      c.classList.add("how-flow-card--cta-active");
     }
-    if (len < 2) return 0;
-    path.style.strokeDasharray = PATH_DASH_PATTERN;
-    path.style.strokeDashoffset = String(len);
-    return len;
-  }
-
-  function runDesktopScrolly() {
-    document.documentElement.classList.add("how-gsap-desktop");
-    section.classList.add("how-section--scrolly");
-    section.classList.add("reveal-visible");
-
-    // New: scroll-driven "scenes" where headline + one centered card are the focus.
-    section.classList.add("how-section--scenes");
-    document.documentElement.classList.add("how-scenes-active");
-    try {
-      console.log("[Y] how scenes init");
-    } catch (_) {}
-
-    cards.forEach((c) => {
-      c.classList.add("how-flow-card--revealed");
-      if (c.classList.contains("how-flow-card--final")) c.classList.add("how-flow-card--cta-active");
-    });
-    if (ratingEl) ratingEl.classList.add("how-rating--lit");
-
-    // Connectors: stop dash-anim; we will show/hide connectors per scene.
-    paths.forEach((path) => {
-      path.style.removeProperty("stroke-dasharray");
-      path.style.removeProperty("stroke-dashoffset");
-    });
-    connectors.forEach((c) => c.classList.remove("is-visible"));
-
-    const n = cards.length;
-    const spacing = () => Math.max(420, Math.round(window.innerHeight * 0.78));
-
-    // In scenes mode: only one card is ever visible.
-    const tl = gsap.timeline({ defaults: { ease: "none" } });
-
-    function setCardState(activeIndex) {
-      cards.forEach((el, i) => {
-        el.classList.toggle("is-current", i === activeIndex);
-        el.classList.toggle("is-past", i < activeIndex);
-        el.classList.toggle("is-future", i > activeIndex);
-        if (i !== activeIndex) el.classList.remove("is-hovered");
-      });
-    }
-
-    cards.forEach((el) => {
-      el.addEventListener("mouseenter", () => {
-        if (el.classList.contains("is-current")) el.classList.add("is-hovered");
-      });
-      el.addEventListener("mouseleave", () => {
-        el.classList.remove("is-hovered");
-      });
-    });
-
-    tl.addLabel("scene_headline_in", 0);
-
-    if (sticky) {
-      gsap.set(sticky, { opacity: 0, y: 16 });
-      tl.to(sticky, { opacity: 1, y: 0, duration: 0.35 }, "scene_headline_in");
-    }
-
-    // Prepare cards
-    gsap.set(cards, { opacity: 0, y: () => spacing() * 0.9 });
-    cards.forEach((c) => (c.style.filter = "blur(0px)"));
-    setCardState(0);
-
-    // Scene 2: first card enters and gets stuck centered
-    if (cards[0]) {
-      tl.to(
-        cards[0],
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.9,
-          onComplete: () => gsap.set(cards[0], { clearProps: "opacity" }),
-        },
-        ">+=0.25"
-      );
-      tl.to({}, { duration: 0.55 }); // hold
-    }
-
-    // Scene 3+: headline + current card move up together, next card comes in and becomes centered.
-    for (let i = 0; i < n - 1; i++) {
-      const cur = cards[i];
-      const next = cards[i + 1];
-      if (!cur || !next) continue;
-
-      const sp = () => spacing();
-
-      // Hide headline after first card starts flowing.
-      if (sticky && i === 0) {
-        tl.to(sticky, { opacity: 0, y: -24, duration: 0.35 }, "<");
-      }
-
-      tl.to(
-        cur,
-        { y: () => -sp() * 0.95, duration: 0.85, immediateRender: false },
-        ">"
-      );
-      tl.fromTo(
-        next,
-        { y: () => sp() * 0.95, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.85,
-          immediateRender: false,
-          onComplete: () => gsap.set(next, { clearProps: "opacity" }),
-        },
-        "<"
-      );
-      tl.call(() => setCardState(i + 1), undefined, "<+=0.65");
-      tl.to({}, { duration: 0.55 }); // hold
-    }
-
-    // Progressbar (optional)
-    if (progressFill || progressTrack) {
-      tl.eventCallback("onUpdate", () => {
-        const p = tl.progress();
-        const pct = Math.round(p * 100);
-        if (progressFill) progressFill.style.height = `${pct}%`;
-        if (progressTrack) progressTrack.setAttribute("aria-valuenow", String(pct));
-      });
-    }
-
-    const scrollTrigger = ScrollTrigger.create({
-      trigger: section,
-      start: "top top",
-      end: () => "+=" + Math.round(Math.max(window.innerHeight * (n * 2.35 + 1.2), 5200)),
-      pin: true,
-      pinSpacing: true,
-      pinType: "fixed",
-      scrub: 0.65,
-      anticipatePin: 0,
-      invalidateOnRefresh: true,
-      animation: tl,
-    });
-
-    return { tl, scrollTrigger };
-  }
-
-  function runMobileSimple() {
-    document.documentElement.classList.remove("how-gsap-desktop", "how-scenes-active");
-    section.classList.remove("how-section--scrolly", "how-section--scenes");
-    cards.forEach((c) => {
-      c.classList.remove("is-current", "is-past", "is-future", "is-hovered");
-    });
-    connectors.forEach((c) => c.classList.remove("is-visible"));
-    if (sticky) gsap.set(sticky, { clearProps: "all" });
-    fallbackStatic();
-    gsap.set(cards, { clearProps: "all" });
-    gsap.set(flow.querySelectorAll(".how-flow-card__inner"), { clearProps: "all" });
-  }
-
-  const desktopMq = window.matchMedia("(min-width: 900px)");
-  let howScrollTrigger = null;
-  let howTimeline = null;
-
-  function destroyDesktopHow() {
-    if (howScrollTrigger) {
-      howScrollTrigger.kill();
-      howScrollTrigger = null;
-    }
-    if (howTimeline) {
-      howTimeline.kill();
-      howTimeline = null;
-    }
-    ScrollTrigger.getAll().forEach((st) => {
-      if (st.trigger === section) st.kill();
-    });
-  }
-
-  function applyHowMode() {
-    destroyDesktopHow();
-    if (desktopMq.matches) {
-      try {
-        const result = runDesktopScrolly();
-        howTimeline = result.tl;
-        howScrollTrigger = result.scrollTrigger;
-        requestAnimationFrame(() => ScrollTrigger.refresh(true));
-      } catch (e) {
-        document.documentElement.classList.remove("how-gsap-desktop", "how-scenes-active");
-        section.classList.remove("how-section--scrolly", "how-section--scenes");
-        runMobileSimple();
-      }
-    } else {
-      runMobileSimple();
-    }
-  }
-
-  applyHowMode();
-
-  let resizeTimer;
-  window.addEventListener(
-    "resize",
-    () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        const wasDesktop = !!howScrollTrigger;
-        const isDesktop = desktopMq.matches;
-        if (wasDesktop !== isDesktop) {
-          applyHowMode();
-        } else if (isDesktop) {
-          ScrollTrigger.refresh(true);
-        }
-      }, 150);
-    },
-    { passive: true }
-  );
-
-  if (typeof desktopMq.addEventListener === "function") {
-    desktopMq.addEventListener("change", applyHowMode);
-  } else if (typeof desktopMq.addListener === "function") {
-    desktopMq.addListener(applyHowMode);
-  }
-
-  window.addEventListener("load", () => {
-    requestAnimationFrame(() => {
-      void flow.offsetHeight;
-      if (desktopMq.matches) ScrollTrigger.refresh(true);
-    });
   });
+
+  flow.querySelectorAll(".how-flow-card__inner").forEach((inner) => {
+    inner.style.removeProperty("opacity");
+    inner.style.removeProperty("transform");
+  });
+
+  paths.forEach((path) => {
+    path.style.removeProperty("stroke-dasharray");
+    path.style.removeProperty("stroke-dashoffset");
+  });
+
+  if (progressFill) progressFill.style.height = "100%";
+  if (progressTrack) progressTrack.setAttribute("aria-valuenow", "100");
+  if (ratingEl) ratingEl.classList.add("how-rating--lit");
 })();
 
 /**

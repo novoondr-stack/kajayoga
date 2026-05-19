@@ -858,6 +858,25 @@ h3 {
   color: #475569;
 }
 
+/* Statická sekce – vše viditelné, bez scroll animací karet */
+.how-section--static .how-flow-card,
+.how-section--static .how-flow-card__inner {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.how-section--static .how-flow-card {
+  position: relative;
+  left: auto;
+  top: auto;
+  margin-inline: auto;
+}
+
+.how-section--static .how-flow {
+  min-height: 0;
+  width: min(520px, 92vw);
+}
+
 .how-section {
   background: var(--cream);
   /* Vzduch od hero / od sousedních sekcí + uvnitř bloku */
