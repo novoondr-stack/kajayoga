@@ -2,7 +2,7 @@
  * Vlastní kurzor: malý tmavě hnědý kroužek, nad prvky/textem jako lupa s malým přiblížením.
  */
 (function markBuild() {
-  const BUILD = "20260331-5";
+  const BUILD = "20260519-113";
   window.__Y_BUILD__ = BUILD;
   try {
     console.log(`[Y] build ${BUILD} loaded`);
@@ -30,11 +30,18 @@
   let cursorX = 0;
   let cursorY = 0;
 
-  const magnifierSelectors = "a, button, input, [role=button], .faq-question, h1, h2, h3, h4, p, span, .how-flow-card, .social-post, .why-split, .bonus-card, .about-card, .signup-input, .faq-item, .stats-block, .subtitle, .signup-title, .signup-subtitle, .faq-question__text";
+  const magnifierSelectors =
+    "a, button, input, [role=button], h1, h2, h3, h4, p, span, .how-flow-card, .social-post, .why-split, .bonus-card, .about-card, .signup-input, .stats-block, .subtitle, .signup-title, .signup-subtitle";
 
-  const zoomSelectors = "a, button, .faq-question, h1, h2, h3, h4, p, span, .subtitle, .signup-title, .signup-subtitle, .faq-question__text, .how-flow-card p, .about-card__text, .stats-block__label";
+  const zoomSelectors =
+    "a, button, h1, h2, h3, h4, p, span, .subtitle, .signup-title, .signup-subtitle, .how-flow-card p, .about-card__text, .stats-block__label";
 
   let lastZoomedEl = null;
+  let lastHitTestAt = 0;
+  let lastEl = null;
+  let lastMagnifierTarget = null;
+  let lastZoomTarget = null;
+  let lastIsOnDarkHero = false;
 
   function updatePosition() {
     cursorX += (mouseX - cursorX) * 0.08;
@@ -42,11 +49,20 @@
     cursor.style.left = cursorX + "px";
     cursor.style.top = cursorY + "px";
 
-    const el = document.elementFromPoint(mouseX, mouseY);
-    const magnifierTarget = el && el.closest(magnifierSelectors);
-    const zoomTarget = el && el.closest(zoomSelectors);
-    const isMagnifier = !!magnifierTarget;
-    const isOnDarkHero = !!(el && el.closest(".dream-hero"));
+    // Hit test je relativně drahý (elementFromPoint + closest). Stačí ho dělat ~30×/s.
+    const now = performance.now();
+    if (now - lastHitTestAt > 33) {
+      lastHitTestAt = now;
+      lastEl = document.elementFromPoint(mouseX, mouseY);
+      const inFaq = !!(lastEl && lastEl.closest(".faq-section"));
+      lastMagnifierTarget = !inFaq && lastEl && lastEl.closest(magnifierSelectors);
+      lastZoomTarget = !inFaq && lastEl && lastEl.closest(zoomSelectors);
+      lastIsOnDarkHero = !!(lastEl && lastEl.closest(".dream-hero"));
+    }
+
+    const zoomTarget = lastZoomTarget;
+    const isMagnifier = !!lastMagnifierTarget;
+    const isOnDarkHero = !!lastIsOnDarkHero;
 
     cursor.classList.toggle("is-magnifier", isMagnifier);
     cursor.classList.toggle("is-on-dark", isOnDarkHero);
@@ -69,7 +85,10 @@
       lastZoomedEl = null;
     }
 
-    const shouldZoom = zoomTarget && !zoomTarget.closest(".dream-content h1");
+    const shouldZoom =
+      zoomTarget &&
+      !zoomTarget.closest(".dream-content h1") &&
+      !zoomTarget.closest(".faq-section");
 
     if (shouldZoom) {
       const rect = zoomTarget.getBoundingClientRect();
@@ -135,12 +154,65 @@
  * Section Reveal: sekce se plynule vynoří při scrollu do viewportu.
  */
 (function () {
+  const main = document.querySelector("main");
+  if (main) {
+    let afterHero = false;
+    Array.from(main.children).forEach((el) => {
+      if (el.id === "heroIntroScroll") {
+        afterHero = true;
+        return;
+      }
+      if (!afterHero) return;
+      if (el.classList.contains("how-scrolly")) return; // má vlastní scroll animaci
+      el.classList.add("reveal-section");
+    });
+  }
+
   const sections = document.querySelectorAll(".reveal-section");
   if (!sections.length) return;
 
+  function prep(section) {
+    const root =
+      section.querySelector(".faq-wrap") ||
+      section.querySelector(".container") ||
+      section;
+    const kids = Array.from(root.children).filter((n) => {
+      const tag = String(n.tagName || "").toLowerCase();
+      return tag && tag !== "script" && tag !== "style";
+    });
+
+    kids.forEach((el, i) => {
+      el.classList.add("reveal-child");
+      el.style.setProperty("--reveal-delay", `${i * 75}ms`);
+    });
+  }
+
+  sections.forEach((el) => prep(el));
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("reveal-visible");
+        io.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -18% 0px" }
+  );
+
+  sections.forEach((el) => io.observe(el));
+})();
+
+/**
+ * Sekce „Proč to funguje“: karty při scrollu z boku.
+ */
+(function () {
+  const cards = document.querySelectorAll(".why-steps .why-split");
+  if (!cards.length) return;
+
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduce) {
-    sections.forEach((el) => el.classList.add("reveal-visible"));
+    cards.forEach((el) => el.classList.add("why-split--in-view"));
     return;
   }
 
@@ -148,20 +220,22 @@
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("reveal-visible");
+          entry.target.classList.add("why-split--in-view");
         }
       });
     },
-    { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    { threshold: 0.12, rootMargin: "0px 0px -10% 0px" }
   );
 
-  sections.forEach((el) => io.observe(el));
+  cards.forEach((el) => io.observe(el));
 })();
 
 /**
  * Sekce „Jak to funguje“: statický layout – klasický scroll, bez GSAP pin/scenes.
  */
 (function () {
+  if (document.getElementById("stage")) return;
+
   const section = document.getElementById("howSection");
   const flow = document.getElementById("howFlow");
   if (!section || !flow) return;
@@ -339,14 +413,15 @@
 })();
 
 /**
- * Stats bar: counter-up animace při scrollu do viewportu.
+ * Stats bar: counter-up animace až po scrollu do sekce (po reveal).
  */
 (function () {
+  const section = document.querySelector(".stats-bar");
   const numbers = document.querySelectorAll(".stats-block__number[data-count]");
-  if (!numbers.length) return;
+  if (!section || !numbers.length) return;
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const DURATION = 1600;
+  const DURATION = 2600;
 
   function format(n) {
     if (n >= 1000) {
@@ -357,7 +432,7 @@
     return String(n);
   }
 
-  function animate(el) {
+  function animate(el, delayMs) {
     const target = parseInt(el.dataset.count, 10);
     if (isNaN(target)) return;
 
@@ -366,10 +441,15 @@
       return;
     }
 
-    const start = performance.now();
+    const startAt = performance.now() + delayMs;
 
     function tick(now) {
-      const elapsed = now - start;
+      if (now < startAt) {
+        requestAnimationFrame(tick);
+        return;
+      }
+
+      const elapsed = now - startAt;
       const progress = Math.min(elapsed / DURATION, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       const current = Math.round(target * eased);
@@ -380,20 +460,40 @@
     requestAnimationFrame(tick);
   }
 
+  function runCounters() {
+    if (section.dataset.statsAnimated === "1") return;
+    if (section.classList.contains("reveal-section") && !section.classList.contains("reveal-visible")) {
+      return;
+    }
+
+    const rect = section.getBoundingClientRect();
+    if (rect.bottom < window.innerHeight * 0.12 || rect.top > window.innerHeight * 0.92) {
+      return;
+    }
+
+    section.dataset.statsAnimated = "1";
+    numbers.forEach((el, index) => animate(el, index * 140));
+  }
+
   const io = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const el = entry.target;
-        if (el.dataset.animated) return;
-        el.dataset.animated = "1";
-        animate(el);
+        if (entry.isIntersecting) runCounters();
       });
     },
-    { threshold: 0.4, rootMargin: "0px 0px -40px 0px" }
+    { threshold: 0.18, rootMargin: "0px 0px -8% 0px" }
   );
 
-  numbers.forEach((el) => io.observe(el));
+  io.observe(section);
+
+  if (section.classList.contains("reveal-section")) {
+    const revealObs = new MutationObserver(() => {
+      if (section.classList.contains("reveal-visible")) runCounters();
+    });
+    revealObs.observe(section, { attributes: true, attributeFilter: ["class"] });
+  }
+
+  runCounters();
 })();
 
 /**
@@ -404,29 +504,53 @@
   const items = document.querySelectorAll(".faq-item");
   if (!toggles.length || !items.length) return;
 
+  const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  function closeAll() {
+    items.forEach((el) => {
+      el.classList.remove("is-open");
+      const answer = el.querySelector(".faq-answer");
+      const trigger = el.querySelector("[data-faq-toggle]");
+      if (answer) answer.setAttribute("aria-hidden", "true");
+      if (trigger) trigger.setAttribute("aria-expanded", "false");
+    });
+  }
+
+  function openItem(item) {
+    if (!item) return;
+    const isOpen = item.classList.contains("is-open");
+    closeAll();
+    if (isOpen) return;
+    item.classList.add("is-open");
+    const answer = item.querySelector(".faq-answer");
+    const trigger = item.querySelector("[data-faq-toggle]");
+    if (answer) answer.setAttribute("aria-hidden", "false");
+    if (trigger) trigger.setAttribute("aria-expanded", "true");
+  }
+
   toggles.forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
+      const scrollY = window.lenis ? window.lenis.scroll : window.scrollY;
       const item = btn.closest(".faq-item");
-      const isOpen = item.classList.contains("is-open");
+      openItem(item);
 
-      items.forEach((el) => {
-        el.classList.remove("is-open");
-        const answer = el.querySelector(".faq-answer");
-        const trigger = el.querySelector("[data-faq-toggle]");
-        if (answer) answer.setAttribute("aria-hidden", "true");
-        if (trigger) trigger.setAttribute("aria-expanded", "false");
+      requestAnimationFrame(() => {
+        if (window.lenis && typeof window.lenis.scrollTo === "function") {
+          window.lenis.scrollTo(scrollY, { immediate: true });
+        } else {
+          window.scrollTo(0, scrollY);
+        }
       });
-
-      if (!isOpen) {
-        item.classList.add("is-open");
-        const answer = item.querySelector(".faq-answer");
-        const trigger = item.querySelector("[data-faq-toggle]");
-        if (answer) answer.setAttribute("aria-hidden", "false");
-        if (trigger) trigger.setAttribute("aria-expanded", "true");
-      }
     });
   });
+
+  if (canHover) {
+    items.forEach((item) => {
+      item.addEventListener("mouseenter", () => openItem(item));
+      item.addEventListener("mouseleave", () => closeAll());
+    });
+  }
 })();
 
 /**
@@ -496,6 +620,81 @@
 
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(start).catch(start);
+  }
+})();
+
+/**
+ * Posuvník vpravo – průhledná dráha, hnědý posuvník podle pozice scrollu.
+ */
+(function () {
+  const root = document.getElementById("pageScroll");
+  const track = document.getElementById("pageScrollTrack");
+  const thumb = document.getElementById("pageScrollThumb");
+  if (!root || !track || !thumb) return;
+
+  const canShow = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (!canShow) return;
+
+  let lenisHooked = false;
+
+  function getScrollY() {
+    if (window.lenis && typeof window.lenis.scroll === "number") {
+      return window.lenis.scroll;
+    }
+    return window.scrollY || document.documentElement.scrollTop || 0;
+  }
+
+  function getScrollMax() {
+    if (window.lenis && typeof window.lenis.limit === "number") {
+      return Math.max(0, window.lenis.limit);
+    }
+    const rootEl = document.documentElement;
+    return Math.max(0, rootEl.scrollHeight - window.innerHeight);
+  }
+
+  function updatePageScrollIndicator() {
+    const max = getScrollMax();
+    if (max <= 8) {
+      root.classList.remove("is-visible");
+      return;
+    }
+
+    root.classList.add("is-visible");
+    const trackH = track.clientHeight;
+    const ratio = window.innerHeight / document.documentElement.scrollHeight;
+    const thumbH = Math.max(28, Math.round(trackH * ratio));
+    const travel = Math.max(0, trackH - thumbH);
+    const y = getScrollY();
+
+    let progress = y / max;
+    if (y <= 1) progress = 0;
+    else if (y >= max - 1) progress = 1;
+    else progress = Math.min(1, Math.max(0, progress));
+
+    thumb.style.height = `${thumbH}px`;
+    thumb.style.top = `${travel * progress}px`;
+  }
+
+  function hookLenis() {
+    if (lenisHooked || !window.lenis || typeof window.lenis.on !== "function") return;
+    window.lenis.on("scroll", updatePageScrollIndicator);
+    lenisHooked = true;
+  }
+
+  updatePageScrollIndicator();
+  window.addEventListener("scroll", updatePageScrollIndicator, { passive: true });
+  window.addEventListener("resize", updatePageScrollIndicator);
+
+  hookLenis();
+  const lenisPoll = window.setInterval(() => {
+    hookLenis();
+    updatePageScrollIndicator();
+    if (lenisHooked) window.clearInterval(lenisPoll);
+  }, 120);
+  window.setTimeout(() => window.clearInterval(lenisPoll), 8000);
+
+  if (typeof ScrollTrigger !== "undefined") {
+    ScrollTrigger.addEventListener("refresh", updatePageScrollIndicator);
   }
 })();
 

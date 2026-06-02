@@ -18,8 +18,10 @@
   --why-frame: rgba(90, 45, 38, 0.38);
   /* Textové „okno“ v Proč to funguje – lehce průhledné, prosvítá krém */
   --why-panel-bg: rgba(250, 247, 240, 0.82);
-  /* Sekce bonusů – zelený akcent jako na referenci */
-  --bonus-green: #3aab5a;
+  /* Sekce bonusů – tmavší zelený akcent (stejný jako registrace) */
+  --accent-green: #2f7d55;
+  --accent-green-dark: #267349;
+  --bonus-green: var(--accent-green);
   /* Pozadí mockupu e-booku (vzorkováno z PNG) */
   --bonus-ebook-bg: #f4e3d9;
 }
@@ -28,28 +30,102 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  html {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  .page-scroll {
+    position: fixed;
+    top: clamp(0.75rem, 4vh, 1.5rem);
+    right: clamp(0.55rem, 1.35vw, 0.95rem);
+    bottom: clamp(0.75rem, 4vh, 1.5rem);
+    z-index: 110;
+    width: 5px;
+    height: auto;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .page-scroll.is-visible {
+    opacity: 1;
+  }
+
+  .page-scroll__track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  .page-scroll__thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 28px;
+    border-radius: 999px;
+    background: rgba(168, 74, 56, 0.42);
+    box-shadow: 0 0 10px rgba(168, 74, 56, 0.12);
+    will-change: top, height;
+  }
+}
+
 /* GSAP ScrollTrigger + scrub: smooth scroll rozbíjí vazbu scroll ↔ animace */
 html.how-gsap-desktop {
   scroll-behavior: auto;
 }
 
-/* —— Section Reveal: vynoření při scrollu —— */
+/* —— Section Reveal: vynoření při scrollu (postupně po blocích) —— */
 html.reveal-js .reveal-section {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+  opacity: 1;
+  transform: none;
 }
 
-html.reveal-js .reveal-section.reveal-visible {
+html.reveal-js .reveal-section .reveal-child {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(5px);
+  transition:
+    opacity 0.85s var(--ease-out),
+    transform 0.9s var(--ease-out),
+    filter 0.9s var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform, filter;
+}
+
+html.reveal-js .reveal-section.reveal-visible .reveal-child {
   opacity: 1;
   transform: translateY(0);
+  filter: blur(0);
+}
+
+/* Galerie: reveal nesmí přepsat naklonění pasu */
+html.reveal-js .reveal-section .gallery-motion__tilt.reveal-child {
+  transform: translateY(18px) rotate(-4deg);
+}
+
+html.reveal-js .reveal-section.reveal-visible .gallery-motion__tilt.reveal-child {
+  transform: translateY(0) rotate(-4deg);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html.reveal-js .reveal-section {
+  html.reveal-js .reveal-section .reveal-child {
     opacity: 1;
     transform: none;
+    filter: none;
     transition: none;
+  }
+
+  html.reveal-js .reveal-section .gallery-motion__tilt.reveal-child {
+    transform: rotate(-4deg);
   }
 }
 
@@ -62,9 +138,13 @@ html.reveal-js .reveal-section.reveal-visible {
   html.custom-cursor-active a,
   html.custom-cursor-active button,
   html.custom-cursor-active input,
-  html.custom-cursor-active [role="button"],
-  html.custom-cursor-active .faq-question {
+  html.custom-cursor-active [role="button"] {
     cursor: none !important;
+  }
+
+  html.custom-cursor-active .faq-section,
+  html.custom-cursor-active .faq-section * {
+    cursor: auto !important;
   }
 
   .custom-cursor {
@@ -135,7 +215,7 @@ html.reveal-js .reveal-section.reveal-visible {
 body {
   margin: 0;
   font-family: "Inter", Arial, sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   color: #1f2937;
   background: var(--cream);
   line-height: 1.6;
@@ -336,6 +416,127 @@ h1 {
   }
 }
 
+.hero-intro-scroll {
+  position: relative;
+  background: var(--cream);
+}
+
+html.hero-intro-locked,
+html.hero-intro-locked body {
+  overflow: hidden;
+  height: 100%;
+}
+
+.hero-intro-scroll.is-locked {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  width: 100%;
+}
+
+.hero-intro-scroll.is-locked .hero-intro-pin {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.hero-intro-scroll.is-complete .hero-intro-pin {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.hero-intro-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 2rem;
+  z-index: 20;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.45rem 0.9rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.hero-intro-pin {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero-intro-cream {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  background: var(--cream);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero-intro-video {
+  position: absolute;
+  inset: 0;
+  z-index: 13;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero-intro-video.is-active {
+  pointer-events: auto;
+}
+
+.intro-video-frame {
+  position: relative;
+  overflow: hidden;
+  width: min(860px, 100%);
+  aspect-ratio: 16 / 9;
+  margin: 0 auto;
+  border-radius: 0;
+  background: #d8c8ad;
+  box-shadow: 0 28px 70px rgba(84, 47, 32, 0.18);
+}
+
+.intro-video-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 1;
+  transition: opacity 0.45s ease;
+}
+
+.intro-video-frame iframe,
+.intro-video-frame video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 2;
+  opacity: 1;
+}
+
+.intro-video-frame.is-playing iframe {
+  opacity: 1;
+}
+
 .h1-letter {
   display: inline-block;
   transform: scale(1);
@@ -401,7 +602,7 @@ h3 {
   color: #f1f5f9;
   font-size: clamp(1.02rem, 2.1vw, 1.35rem);
   font-family: "Inter", sans-serif;
-  font-weight: 300;
+  font-weight: 500;
   letter-spacing: 0.01em;
   line-height: 1.55;
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
@@ -477,6 +678,17 @@ h3 {
   margin-top: 12px;
   animation: pulse-gentle 3s ease-in-out infinite;
   transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-cta-note {
+  margin: 0.6rem 0 0;
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
 }
 
 .btn-hero-cta__text {
@@ -578,13 +790,18 @@ h3 {
 
 .discount {
   font-size: 0.88rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #d8feff;
 }
 
 .section {
   padding: 58px 0;
   background: var(--cream);
+}
+
+/* Větší mezery mezi sekcemi pod „Jak to funguje“ */
+main > #howSection ~ * {
+  margin-top: clamp(3rem, 7vw, 5rem);
 }
 
 .section.alt {
@@ -598,8 +815,6 @@ h3 {
 
 .section--why {
   padding: clamp(3rem, 8vw, 5rem) 0;
-  /* o vlásek blíž k sekci nad ní */
-  margin-top: -0.35rem;
 }
 
 .why-steps-wrap {
@@ -608,15 +823,47 @@ h3 {
 }
 
 .why-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-weight: 400;
+  font-size: clamp(2.75rem, 7vw, 5rem);
+  letter-spacing: 0.05em;
+  line-height: 1;
   color: var(--terracotta-text);
   margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
   text-align: center;
+  text-transform: uppercase;
 }
 
 .why-steps {
   display: flex;
   flex-direction: column;
   gap: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+html.reveal-js .why-steps .why-split {
+  opacity: 0;
+  transform: translateX(-64px);
+  transition:
+    opacity 0.8s var(--ease-out),
+    transform 0.85s var(--ease-out);
+  will-change: transform, opacity;
+}
+
+html.reveal-js .why-steps .why-split--reverse {
+  transform: translateX(64px);
+}
+
+html.reveal-js .why-steps .why-split.why-split--in-view {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.reveal-js .why-steps .why-split {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 .why-split {
@@ -681,7 +928,7 @@ h3 {
 .why-split__body {
   margin: 0;
   font-family: "Inter", sans-serif;
-  font-weight: 300;
+  font-weight: 500;
   font-size: clamp(1.02rem, 1.65vw, 1.12rem);
   line-height: 1.78;
   letter-spacing: 0.01em;
@@ -852,7 +1099,7 @@ h3 {
 
 .card p {
   font-family: "Inter", sans-serif;
-  font-weight: 300;
+  font-weight: 500;
   line-height: 1.8;
   letter-spacing: 0.01em;
   color: #475569;
@@ -1079,6 +1326,11 @@ h3 {
 .how-section h2 {
   color: var(--terracotta-text);
   margin-bottom: clamp(2rem, 5vw, 2.75rem);
+}
+
+.how-scrolly #titleBlock h2 {
+  margin: 0;
+  color: var(--terracotta-text);
 }
 
 .how-flow {
@@ -1487,8 +1739,8 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   margin: 0;
   font-family: "Inter", sans-serif;
   font-size: 1.05rem;
-  font-weight: 300;
-  color: #475569;
+  font-weight: 500;
+  color: #64748b;
   line-height: 1.8;
   letter-spacing: 0.01em;
   max-width: 38ch;
@@ -1548,15 +1800,18 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   font-size: 1.1rem !important;
 }
 
-/* CTA nad recenzemi uživatelek */
-.testimonials-cta-wrap {
-  background: var(--cream);
+/* CTA pod kartami v sekci Proč to funguje */
+.why-cta-wrap {
+  margin-top: clamp(2rem, 5vw, 3rem);
   text-align: center;
-  padding: 0 clamp(1rem, 4vw, 2rem) clamp(2rem, 5vw, 3rem);
 }
 
-.testimonials-cta-wrap .btn {
-  margin-top: 0;
+.why-cta-wrap .btn-flow-cta.btn-primary {
+  background: var(--terracotta-text);
+}
+
+.why-cta-wrap .btn-flow-cta.btn-primary:hover {
+  background: #943f2f;
 }
 
 /* —— Reference: karusel ve stylu FB/IG (pozadí jako zbytek stránky) —— */
@@ -1691,14 +1946,14 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
 
 .social-post__name {
   font-family: "Inter", system-ui, sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.95rem;
   color: #050505;
   line-height: 1.2;
 }
 
 .social-post__name--soft {
-  font-weight: 400;
+  font-weight: 500;
   font-size: 0.9rem;
   color: #65676b;
   letter-spacing: 0.02em;
@@ -1747,7 +2002,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   margin: 0;
   padding: 0 0.85rem 1rem;
   font-family: "Inter", sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 0.92rem;
   line-height: 1.45;
   color: #050505;
@@ -1771,7 +2026,6 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   min-height: 0;
   object-fit: cover;
   object-position: center;
-  vertical-align: middle;
   transition: transform 0.5s var(--ease-out);
 }
 
@@ -1819,7 +2073,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   background: transparent;
   font-family: "Inter", sans-serif;
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 500;
   color: #65676b;
   cursor: pointer;
   transition:
@@ -1903,7 +2157,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   display: grid;
   grid-template-columns: 40% 1fr;
   grid-template-rows: auto 1fr;
-  gap: clamp(1rem, 2.5vw, 1.75rem);
+  gap: clamp(0.35rem, 1vw, 0.65rem) clamp(1rem, 2.5vw, 1.75rem);
   align-items: center;
   justify-content: center;
   padding: clamp(1.5rem, 4vw, 2rem) 0;
@@ -1923,11 +2177,20 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
 .about-card__header {
   grid-column: 2;
   grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
 }
 
 .about-card__body {
   grid-column: 2;
   grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  margin-top: 0;
 }
 
 .about-card__portrait-wrap {
@@ -1963,35 +2226,21 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   mix-blend-mode: multiply;
 }
 
-.about-card__header {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-}
-
-.about-card__body {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-}
-
 .about-card__title {
-  margin: 0 0 0.35rem;
-  font-family: "Bebas Neue", "Oswald", sans-serif;
-  font-weight: 400;
-  font-size: clamp(2.65rem, 6vw, 3.6rem);
+  margin: 0 0 0.2rem;
+  font-family: "Oswald", "Bebas Neue", sans-serif;
+  font-weight: 700;
+  font-size: clamp(3rem, 7.5vw, 4.5rem);
   line-height: 1;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--terracotta-text);
 }
 
 .about-card__subtitle {
-  margin: 0 0 1.25rem;
+  margin: 0 0 0.45rem;
   font-family: "Inter", sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.8rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1999,15 +2248,19 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
 }
 
 .about-card__text {
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.25rem;
   font-family: "Inter", sans-serif;
-  font-weight: 300;
-  font-size: clamp(1rem, 1.4vw, 1.12rem);
-  line-height: 1.8;
+  font-weight: 500;
+  font-size: clamp(1rem, 1.45vw, 1.1rem);
+  line-height: 1.65;
   letter-spacing: 0.01em;
-  color: #475569;
+  color: var(--terracotta-text);
   max-width: 42ch;
   text-align: left;
+}
+
+.about-card__text:first-child {
+  margin-top: 0;
 }
 
 .about-card__link {
@@ -2077,7 +2330,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
 
 .stats-block__label {
   font-family: "Inter", sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 0.95rem;
   line-height: 1.4;
   color: #78350f;
@@ -2184,8 +2437,10 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
 
 /* —— Registrační sekce: formulář —— */
 .signup-section {
-  --signup-accent: var(--bonus-green);
-  --signup-accent-dark: #2f9649;
+  --signup-accent: #2f7d55;
+  --signup-accent-dark: #267349;
+  --signup-title-dark: #452a1f;
+  --signup-title-accent: #b85a3e;
   background: var(--cream);
   padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem);
   margin-top: 0;
@@ -2203,34 +2458,47 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
 
 .signup-title {
   margin: 0 auto 0.75rem;
-  max-width: min(36ch, 92vw);
-  font-family: "Bebas Neue", "Oswald", sans-serif;
-  font-weight: 600;
-  font-size: clamp(2.1rem, 5vw, 3.5rem);
-  line-height: 1.2;
-  letter-spacing: 0.04em;
+  max-width: none;
+  width: fit-content;
+  font-family: "Oswald", "Bebas Neue", sans-serif;
+  font-weight: 700;
+  font-size: clamp(3rem, 9.5vw, 5.75rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
   text-transform: uppercase;
-  color: var(--terracotta-text);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "kern" 1;
 }
 
 .signup-title__line {
   display: block;
   margin: 0;
-  padding: 0.05em 0;
+  padding: 0;
+  white-space: nowrap;
+  line-height: 0.84;
+  padding-top: 0.28em;
+}
+
+.signup-title__line:first-child {
+  padding-top: 0;
 }
 
 .signup-title__line + .signup-title__line {
-  margin-top: 0.1em;
+  margin-top: 0;
 }
 
-.signup-title__accent {
-  color: var(--bonus-green);
+.signup-title__line--dark {
+  color: var(--signup-title-dark);
+}
+
+.signup-title__line--accent {
+  color: var(--signup-title-accent);
 }
 
 .signup-subtitle {
   margin: 0;
   font-family: "Inter", sans-serif;
-  font-weight: 300;
+  font-weight: 500;
   font-size: clamp(1rem, 1.8vw, 1.15rem);
   line-height: 1.6;
   color: #4b5563;
@@ -2247,7 +2515,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   padding: 1rem 1.25rem;
   font-family: "Inter", sans-serif;
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 500;
   color: #1f2937;
   background: #fff;
   border: 1px solid #6b7280;
@@ -2262,7 +2530,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
 .signup-input:focus {
   outline: none;
   border-color: var(--signup-accent);
-  box-shadow: 0 0 0 3px rgba(58, 171, 90, 0.22);
+  box-shadow: 0 0 0 3px rgba(47, 125, 85, 0.22);
 }
 
 .signup-price {
@@ -2280,7 +2548,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   margin: 0.2rem 0 0;
   font-family: "Inter", sans-serif;
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--signup-accent);
 }
 
@@ -2294,7 +2562,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
 .signup-price__note {
   margin: 0.5rem 0 0;
   font-size: 0.9rem;
-  font-weight: 400;
+  font-weight: 500;
   color: #6b7280;
 }
 
@@ -2303,7 +2571,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   width: 100%;
   padding: 1rem 1.5rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   text-align: center;
@@ -2311,16 +2579,16 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   margin: -0.4rem 0 0;
 }
 
-/* CTA zelené/tyrkysové s pulzací a zábleskem */
+/* CTA – tmavší zelená s pulzací a zábleskem */
 .signup-cta.premium-button {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background: linear-gradient(165deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: linear-gradient(165deg, var(--signup-accent) 0%, var(--signup-accent-dark) 100%);
   color: #fff;
   border: none;
-  box-shadow: 0 6px 22px rgba(38, 216, 208, 0.35);
-  animation: pulse-gentle-teal 3s ease-in-out infinite;
+  box-shadow: 0 6px 22px rgba(47, 125, 85, 0.32);
+  animation: pulse-gentle-green 3s ease-in-out infinite;
   cursor: pointer;
 }
 
@@ -2348,15 +2616,15 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   filter: brightness(1.08);
 }
 
-@keyframes pulse-gentle-teal {
+@keyframes pulse-gentle-green {
   0%,
   100% {
-    box-shadow: 0 6px 22px rgba(38, 216, 208, 0.35);
+    box-shadow: 0 6px 22px rgba(47, 125, 85, 0.32);
   }
   50% {
     box-shadow:
-      0 10px 38px rgba(38, 216, 208, 0.5),
-      0 0 28px rgba(38, 216, 208, 0.25);
+      0 10px 38px rgba(47, 125, 85, 0.45),
+      0 0 28px rgba(47, 125, 85, 0.22);
   }
 }
 
@@ -2373,7 +2641,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   margin: 0.15rem 0 0;
   font-family: "Inter", sans-serif;
   font-size: 0.78rem;
-  font-weight: 400;
+  font-weight: 500;
   color: #6b7280;
   line-height: 1.5;
   text-align: center;
@@ -2407,9 +2675,12 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   width: 100%;
   padding: 20px;
   border-radius: 12px;
-  background: #f9f9f9;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: "Poppins", sans-serif;
+  background: rgba(255, 255, 255, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 4px 20px rgba(60, 40, 30, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-family: "Inter", sans-serif;
   text-align: center;
 }
 
@@ -2418,8 +2689,9 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   width: 100%;
   padding: 12px;
   margin: 8px 0;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(120, 100, 90, 0.28);
   border-radius: 6px;
+  background: rgba(255, 255, 255, 0.52);
   font-family: inherit;
   font-size: 16px;
   outline: none;
@@ -2430,7 +2702,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
 
 .signup-section .joga-form input:focus {
   border-color: var(--signup-accent);
-  box-shadow: 0 0 0 3px rgba(58, 171, 90, 0.22);
+  box-shadow: 0 0 0 3px rgba(47, 125, 85, 0.22);
 }
 
 .signup-section .joga-form button {
@@ -2442,7 +2714,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   border: none;
   border-radius: 6px;
   font-family: inherit;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 16px;
   cursor: pointer;
   transition: background 0.3s ease;
@@ -2520,26 +2792,12 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   margin-top: clamp(1.75rem, 4vw, 2.75rem);
 }
 
-.bonus-cta-wrap .btn-bonus-cta {
-  margin-top: 0;
-  font-family: "Oswald", "Barlow Condensed", sans-serif;
-  font-weight: 700;
-  font-size: clamp(1rem, 2vw, 1.1rem);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #fff;
-  background: var(--bonus-green);
-  border: none;
-  box-shadow: 0 6px 22px rgba(58, 171, 90, 0.35);
-  transition:
-    background 0.3s ease,
-    box-shadow 0.3s ease,
-    transform 0.2s var(--ease-spring);
+.bonus-cta-wrap .btn-flow-cta.btn-primary {
+  background: var(--terracotta-text);
 }
 
-.bonus-cta-wrap .btn-bonus-cta:hover {
-  background: #2f9649;
-  box-shadow: 0 8px 26px rgba(58, 171, 90, 0.42);
+.bonus-cta-wrap .btn-flow-cta.btn-primary:hover {
+  background: #943f2f;
 }
 
 .bonus-card {
@@ -2575,10 +2833,10 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   display: inline-block;
   margin-bottom: 0.75rem;
   padding: 0.4rem 0.7rem;
-  background: var(--bonus-green);
+  background: var(--accent-green);
   color: #fff;
-  font-family: "Oswald", "Barlow Condensed", sans-serif;
-  font-weight: 700;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
   font-size: 0.85rem;
   line-height: 1;
   letter-spacing: 0.14em;
@@ -2703,7 +2961,6 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   object-position: center;
   border: none;
   border-radius: 0;
-  vertical-align: top;
 }
 
 @media (max-width: 768px) {
@@ -2769,33 +3026,39 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
 }
 
 .faq-wrap {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: clamp(2rem, 5vw, 4rem);
+  column-gap: clamp(2rem, 5vw, 4rem);
   max-width: 960px;
   margin: 0 auto;
 }
 
 .faq-title {
   margin: 0;
+  align-self: center;
   flex-shrink: 0;
-  width: clamp(200px, 35%, 280px);
-  font-family: "Bebas Neue", "Oswald", sans-serif;
-  font-weight: 400;
+  width: auto;
+  max-width: none;
+  font-family: "Oswald", "Bebas Neue", sans-serif;
+  font-weight: 700;
   font-size: clamp(2rem, 5vw, 3.2rem);
   line-height: 1.05;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--terracotta-text);
   text-align: left;
+  white-space: nowrap;
 }
 
 .faq-list {
   flex: 1;
   min-width: 0;
+  align-self: center;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  overflow-anchor: none;
 }
 
 .faq-item {
@@ -2822,8 +3085,8 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   background: transparent;
   font-family: "Inter", sans-serif;
   font-size: 1.05rem;
-  font-weight: 600;
-  color: #6b7280;
+  font-weight: 500;
+  color: var(--terracotta-text);
   text-align: left;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s var(--ease-spring);
@@ -2847,7 +3110,8 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(168, 74, 56, 0.4);
+  color: var(--terracotta-text);
+  opacity: 0.55;
   transition: transform 0.3s ease-in-out;
 }
 
@@ -2871,9 +3135,9 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   padding-top: 0;
   font-family: "Inter", sans-serif;
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.6;
-  color: #6b7280;
+  color: var(--terracotta-text);
 }
 
 .faq-item.is-open .faq-answer p {
@@ -2883,10 +3147,18 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
 
 @media (max-width: 720px) {
   .faq-wrap {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    row-gap: clamp(1.5rem, 4vw, 2rem);
+    justify-items: center;
   }
 
   .faq-title {
+    width: auto;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .faq-list {
     width: 100%;
   }
 }
@@ -3089,13 +3361,20 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   }
 
   .gallery-motion__tilt {
-    transform: rotate(-2deg);
+    transform: rotate(-4deg);
   }
 
   .signup-title {
-    max-width: 100%;
-    font-size: clamp(1.85rem, 8.5vw, 2.35rem);
-    letter-spacing: 0.03em;
+    max-width: none;
+    width: fit-content;
+    font-size: clamp(2.45rem, 13vw, 3.6rem);
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .signup-title__line {
+    line-height: 0.86;
+    padding-top: 0.24em;
   }
 
   .signup-section {
@@ -3157,8 +3436,8 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
     margin-left: -3%;
   }
 
-  .bonus-cta-wrap .btn-bonus-cta,
-  .testimonials-cta-wrap .btn {
+  .bonus-cta-wrap .btn-flow-cta,
+  .why-cta-wrap .btn {
     width: min(100%, 20rem);
     max-width: 100%;
     box-sizing: border-box;
@@ -3178,7 +3457,7 @@ html.how-journey-js .how-flow-card.how-flow-card--revealed:focus-within {
   }
 
   .faq-wrap {
-    align-items: stretch;
+    align-items: center;
   }
 
   .faq-question {

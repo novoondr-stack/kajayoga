@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="cs">
   <head>
     <meta charset="UTF-8" />
@@ -11,10 +11,119 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@600&family=Inter:wght@300;400;500&family=Oswald:wght@500;600;700&family=Poppins:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@600&family=Inter:wght@300;400;500&family=Oswald:wght@500;600;700&family=Poppins:wght@400;600&family=Playfair+Display:wght@700&family=Lora:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=20260519-30" />
+    <link rel="stylesheet" href="styles.css?v=20260602-7" />
+    <script src="gsap.min.js"></script>
+    <script src="scrolltrigger.min.js"></script>
+    <style>
+      .how-scrolly {
+        background: var(--cream);
+      }
+
+      #pinWrap {
+        width: 100%;
+      }
+
+      #stage {
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        position: relative;
+        overflow: hidden;
+        background: var(--cream);
+      }
+
+      #titleBlock {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        left: 0;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      #titleBlock .how-logo {
+        margin-bottom: 12px;
+      }
+
+      #scrollHint {
+        position: fixed;
+        bottom: 1.75rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        color: var(--terracotta-text);
+        opacity: 0;
+        visibility: hidden;
+        z-index: 120;
+        pointer-events: none;
+        transition: opacity 0.35s, visibility 0.35s;
+      }
+
+      #scrollHint.is-active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      #scrollHint span {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        font-family: "Inter", sans-serif;
+      }
+
+      #scrollHint svg {
+        width: 16px;
+        height: 16px;
+        stroke: var(--terracotta-text);
+        fill: none;
+        stroke-width: 2;
+        animation: how-bob 2s ease-in-out infinite;
+      }
+
+      @keyframes how-bob {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(5px);
+        }
+      }
+
+      .how-scrolly #stage .how-flow-card {
+        position: absolute;
+        left: 50%;
+        z-index: 5;
+        width: min(420px, 88vw);
+        max-width: none;
+        margin-inline: 0;
+        will-change: transform, opacity;
+        transition: none;
+      }
+
+      .how-scrolly #stage .how-flow-card__inner {
+        opacity: 1;
+        transform: none;
+      }
+
+      .how-scrolly #stage .how-flow-card--final .how-rating__star {
+        color: #f5b301;
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .how-scrolly #stage .how-flow-card p strong {
+        color: var(--terracotta-text);
+        font-weight: 500;
+      }
+    </style>
     <script>
       document.documentElement.classList.add("how-flow-js", "reveal-js");
     </script>
@@ -38,58 +147,63 @@
         </svg>
       </span>
     </div>
+    <div class="page-scroll" id="pageScroll" aria-hidden="true">
+      <div class="page-scroll__track" id="pageScrollTrack">
+        <div class="page-scroll__thumb" id="pageScrollThumb"></div>
+      </div>
+    </div>
     <main>
-      <section class="dream-hero" id="objednat">
-        <div class="hero-shadows" aria-hidden="true"></div>
-        <div class="overlay"></div>
-        <div class="brand brand--hero-top">JÓGA DO EMAILU <span aria-hidden="true">✉</span></div>
-        <div class="container dream-content">
-          <h1>
-            <span class="h1-line">ZAČNI ODEBÍRAT JÓGU</span>
-            <span class="h1-line">DO EMAILU A ROZHÝBEJ</span>
-            <span class="h1-line">SVÉ RÁNO</span>
-          </h1>
-
-          <p class="subtitle">Každé ráno na tebe v emailu bude čekat lekce.</p>
-
-          <div class="price-block">
-            <p class="old-price">399 Kč měsíčně</p>
-            <p class="new-price">199 Kč měsíčně</p>
-          </div>
-
-          <a class="btn btn-primary btn-hero-cta premium-button" href="#"><span class="btn-hero-cta__text">Chci dostávat každé ráno jógu do emailu</span></a>
-        </div>
-      </section>
-
-      <section class="section how-section" id="howSection">
-        <div class="container how-wrap">
-          <div class="how-section__sticky">
-            <p class="how-logo">Jóga do emailu</p>
-            <div class="how-section__title-row">
-              <div
-                class="how-section__progress"
-                id="howProgressTrack"
-                role="progressbar"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow="0"
-                aria-labelledby="howHeading"
-              >
-                <div class="how-section__progress-fill" id="howProgressFill"></div>
+      <div class="hero-intro-scroll" id="heroIntroScroll">
+        <div class="hero-intro-pin">
+          <section class="dream-hero" id="objednat">
+            <div class="hero-shadows" aria-hidden="true"></div>
+            <div class="overlay"></div>
+            <div class="brand brand--hero-top">JÓGA DO EMAILU <span aria-hidden="true">✉</span></div>
+            <div class="container dream-content">
+              <h1>
+                <span class="h1-line">ZAČNI ODEBÍRAT JÓGU</span>
+                <span class="h1-line">DO EMAILU A ROZHÝBEJ</span>
+                <span class="h1-line">SVÉ RÁNO</span>
+              </h1>
+              <p class="subtitle">Každé ráno na tebe v emailu bude čekat lekce.</p>
+              <div class="price-block">
+                <p class="old-price">399 Kč měsíčně</p>
+                <p class="new-price">199 Kč měsíčně</p>
               </div>
+              <a class="btn btn-primary btn-hero-cta premium-button" href="#registrace">
+                <span class="btn-hero-cta__text">Chci dostávat každé ráno jógu do emailu</span>
+              </a>
+              <p class="hero-cta-note">7,- Kč za den</p>
+            </div>
+          </section>
+          <div class="hero-intro-cream" aria-hidden="true"></div>
+          <div class="hero-intro-video" aria-label="Úvodní video">
+            <div class="intro-video-frame">
+              <video
+                class="intro-video-el"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="auto"
+                aria-label="Jóga do emailu - úvodní video"
+              >
+                <source src="./assets/jogadoemailu.mp4" type="video/mp4" />
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="how-scrolly" id="howSection" aria-labelledby="howHeading">
+        <div id="pinWrap">
+          <div id="stage">
+            <div id="titleBlock">
+              <p class="how-logo">Jóga do emailu</p>
               <h2 id="howHeading">Jak to funguje</h2>
             </div>
-          </div>
-          <div class="how-flow" id="howFlow">
-            <div class="how-flow-connector how-flow-connector--intro" aria-hidden="true">
-              <svg viewBox="0 0 120 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  class="how-flow-connector__path"
-                  d="M60 4 C60 28 60 52 60 92"
-                />
-              </svg>
-            </div>
-            <article class="how-flow-card" data-how-index="0">
+
+            <article id="card1" class="how-flow-card card">
               <div class="how-flow-card__inner">
                 <div class="flow-icon flow-icon--how-0" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" role="img">
@@ -107,15 +221,8 @@
                 </p>
               </div>
             </article>
-            <div class="how-flow-connector" data-how-connector="0" aria-hidden="true">
-              <svg viewBox="0 0 120 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  class="how-flow-connector__path"
-                  d="M60 3 C112 3 112 48 60 48 C8 48 8 93 60 93"
-                />
-              </svg>
-            </div>
-            <article class="how-flow-card" data-how-index="1">
+
+            <article id="card2" class="how-flow-card card">
               <div class="how-flow-card__inner">
                 <div class="flow-icon flow-icon--how-1" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" role="img">
@@ -131,15 +238,8 @@
                 </p>
               </div>
             </article>
-            <div class="how-flow-connector how-flow-connector--flip" data-how-connector="1" aria-hidden="true">
-              <svg viewBox="0 0 120 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  class="how-flow-connector__path"
-                  d="M60 3 C112 3 112 48 60 48 C8 48 8 93 60 93"
-                />
-              </svg>
-            </div>
-            <article class="how-flow-card" data-how-index="2">
+
+            <article id="card3" class="how-flow-card card">
               <div class="how-flow-card__inner">
                 <div class="flow-icon flow-icon--how-2" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" role="img">
@@ -155,15 +255,8 @@
                 </p>
               </div>
             </article>
-            <div class="how-flow-connector" data-how-connector="2" aria-hidden="true">
-              <svg viewBox="0 0 120 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  class="how-flow-connector__path"
-                  d="M60 3 C112 3 112 48 60 48 C8 48 8 93 60 93"
-                />
-              </svg>
-            </div>
-            <article class="how-flow-card how-flow-card--final" data-how-index="3">
+
+            <article id="card4" class="how-flow-card card how-flow-card--final">
               <div class="how-flow-card__inner">
                 <div class="flow-icon flow-icon--how-3" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" role="img">
@@ -173,12 +266,8 @@
                     <path d="M8 12.5h3.4"></path>
                   </svg>
                 </div>
-                <p>
-                  Zaplatíš jednou 890 Kč a 5 měsíců budeš každé ráno dostávat svou
-                  lekci jógy do e-mailu. To je 6 Kč na den za pravidelný pohyb a péči
-                  o sebe.
-                </p>
-                <a class="btn btn-primary btn-flow-cta flow-cta" href="#objednat">Chci jógu do emailu</a>
+                <p>Zaplatíš 180,- Kč měsíčně a každé ráno máš v emailu lekci. To je 7,- Kč za den.</p>
+                <a class="btn btn-primary btn-flow-cta flow-cta" href="#registrace">Chci jógu do emailu</a>
                 <p class="payment-logos" aria-label="Platební metody">
                   <span>VISA</span><span>Mastercard</span><span>Maestro</span>
                 </p>
@@ -193,9 +282,15 @@
             </article>
           </div>
         </div>
-      </section>
+        <div id="scrollHint" aria-hidden="true">
+          <span>SCROLLUJ</span>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <polyline points="4,6 8,10 12,6" />
+          </svg>
+        </div>
+      </div>
 
-      <section class="section alt section--why reveal-section" aria-labelledby="why-heading">
+      <section class="section alt section--why" aria-labelledby="why-heading">
         <div class="container why-steps-wrap">
           <h2 class="why-title" id="why-heading">Proč to funguje</h2>
 
@@ -297,13 +392,11 @@
             </article>
           </div>
 
-
+          <div class="why-cta-wrap">
+            <a class="btn btn-primary btn-flow-cta" href="#registrace">Chci ráno cvičit</a>
+          </div>
         </div>
       </section>
-
-      <div class="testimonials-cta-wrap reveal-section">
-        <a class="btn btn-primary btn-flow-cta" href="#registrace">Chci ráno cvičit</a>
-      </div>
 
       <section class="social-testimonials reveal-section" aria-labelledby="social-testimonials-heading">
         <div class="social-testimonials__outer">
@@ -505,41 +598,6 @@
         </div>
       </section>
 
-      <section class="section reveal-section">
-        <div class="container">
-          <article class="about-card">
-            <div class="about-card__portrait-wrap">
-              <div class="about-card__portrait-inner">
-                <img
-                  class="about-card__portrait"
-                  src="./assets/karolina-portrait.png"
-                  alt="Karolína – lektorka jógy"
-                  width="320"
-                  height="570"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </div>
-            <div class="about-card__header">
-              <h2 class="about-card__title">Kdo jsem</h2>
-              <p class="about-card__subtitle">Tvoje průvodkyně jógy</p>
-            </div>
-            <div class="about-card__body">
-              <p class="about-card__text">
-                Ahoj, jsem Karolína – certifikovaná lektorka jógy se zaměřením na vědomý pohyb.
-                Józe se věnuji více než 10 let a během této cesty jsem založila seberozvojový
-                projekt Self-optimalizmus, do kterého se zapojilo přes 1000 jogínek.
-              </p>
-              <p class="about-card__text">
-                V rámci tohoto projektu vznikly online programy s cílem podpořit ženy i muže na
-                cestě k větší lehkosti v těle i mysli.
-              </p>
-            </div>
-          </article>
-        </div>
-      </section>
-
       <section class="stats-bar reveal-section" aria-label="Statistiky">
         <div class="stats-bar__inner">
           <div class="stats-block">
@@ -555,9 +613,8 @@
           <div class="stats-block">
             <span class="stats-block__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 4c-2 2-3 5-3 8s1 6 3 8 3-5 3-8-1-6-3-8z"/>
-                <path d="M12 4c2 2 3 5 3 8s-1 6-3 8-3-5-3-8 1-6 3-8z"/>
-                <circle cx="12" cy="12" r="2.5"/>
+                <circle cx="12" cy="8" r="3.5"/>
+                <path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
               </svg>
             </span>
             <span class="stats-block__number" data-count="1000">0</span>
@@ -654,13 +711,11 @@
         <div class="signup-section__inner">
           <header class="signup-header">
             <h2 class="signup-title" id="signup-heading">
-              <span class="signup-title__line">Už jen jeden krok</span>
-              <span class="signup-title__line"
-                >a <span class="signup-title__accent">zítra</span> ráno</span
-              >
-              <span class="signup-title__line"
-                >máš <span class="signup-title__accent">první lekci</span></span
-              >
+              <span class="signup-title__line signup-title__line--dark">Už jen jeden</span>
+              <span class="signup-title__line signup-title__line--accent">krok</span>
+              <span class="signup-title__line signup-title__line--dark">a zítra ráno</span>
+              <span class="signup-title__line signup-title__line--accent">máš první</span>
+              <span class="signup-title__line signup-title__line--accent">lekci</span>
             </h2>
           </header>
 
@@ -814,14 +869,14 @@
           </div>
 
           <div class="bonus-cta-wrap">
-            <a class="btn btn-bonus-cta" href="#registrace">Chci jógu s bonusy</a>
+            <a class="btn btn-primary btn-flow-cta" href="#registrace">Chci jógu s bonusy</a>
           </div>
         </div>
       </section>
 
       <section class="faq-section reveal-section" aria-labelledby="faq-heading">
         <div class="faq-wrap">
-          <h2 class="faq-title" id="faq-heading">ČASTO SE PTÁTE</h2>
+          <h2 class="faq-title" id="faq-heading">FAQ</h2>
           <div class="faq-list" role="list">
           <div class="faq-item" role="listitem">
             <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-answer-1" id="faq-question-1" data-faq-toggle>
@@ -870,10 +925,326 @@
         </div>
         </div>
       </section>
+
+      <section class="section reveal-section">
+        <div class="container">
+          <article class="about-card">
+            <div class="about-card__portrait-wrap">
+              <div class="about-card__portrait-inner">
+                <img
+                  class="about-card__portrait"
+                  src="./assets/karolina-portrait.png"
+                  alt="Karolína – lektorka jógy"
+                  width="320"
+                  height="570"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <div class="about-card__header">
+              <h2 class="about-card__title">Kdo jsem</h2>
+              <p class="about-card__subtitle">Tvoje průvodkyně jógou</p>
+            </div>
+            <div class="about-card__body">
+              <p class="about-card__text">
+                Ahoj, jsem Karolína – certifikovaná lektorka jógy se zaměřením na vědomý pohyb.
+                Józe se věnuji více než 10 let a během této cesty jsem založila seberozvojový
+                projekt Self-optimalizmus, do kterého se zapojilo přes 1000 jogínek.
+              </p>
+              <p class="about-card__text">
+                V rámci tohoto projektu vznikly online programy s cílem podpořit ženy i muže na
+                cestě k větší lehkosti v těle i mysli.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
     </main>
-    <!-- Lokální GSAP = spolehlivé i bez CDN; pořadí: gsap → ScrollTrigger → script -->
-    <script src="vendor/gsap.min.js" defer></script>
-    <script src="vendor/ScrollTrigger.min.js" defer></script>
-    <script src="script.js?v=20260519-30" defer></script>
+
+    <script>
+      (function () {
+        let lenis = null;
+
+        function loadLenisScript() {
+          return new Promise((resolve) => {
+            if (typeof Lenis !== "undefined") {
+              resolve();
+              return;
+            }
+            const existing = document.querySelector('script[data-lenis="1"]');
+            if (existing) {
+              existing.addEventListener("load", () => resolve(), { once: true });
+              return;
+            }
+            const script = document.createElement("script");
+            script.src = "./lenis.min.js";
+            script.dataset.lenis = "1";
+            script.onload = () => resolve();
+            script.onerror = () => resolve();
+            document.body.appendChild(script);
+          });
+        }
+
+        function loadHeroIntroVideo() {
+          const videoEl = document.querySelector(".hero-intro-video video");
+          if (!videoEl || videoEl.dataset.loaded === "1") return;
+          videoEl.dataset.loaded = "1";
+
+          // Autoplay bývá OK jen pokud je muted. Přesto zkusíme play() jednou.
+          try {
+            const p = videoEl.play();
+            if (p && typeof p.catch === "function") p.catch(() => {});
+          } catch (_) {}
+        }
+
+        // Poster reveal removed: video loads & plays immediately via iframe src.
+
+        // ensureVimeoSpeed removed: it could cause video restart.
+
+        let applyHeroProgressGlobal = null;
+
+        function setupHeroScrollScrub() {
+          const scrollRoot = document.getElementById("heroIntroScroll");
+          const pin = document.querySelector(".hero-intro-pin");
+          if (!scrollRoot || !pin || !applyHeroProgressGlobal) return null;
+
+          ScrollTrigger.getById("heroIntroScrub")?.kill();
+
+          const endDistance = () => window.innerHeight;
+
+          return ScrollTrigger.create({
+            id: "heroIntroScrub",
+            trigger: scrollRoot,
+            start: "top top",
+            end: () => `+=${endDistance()}`,
+            pin,
+            scrub: 0.65,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => applyHeroProgressGlobal(self.progress),
+          });
+        }
+
+        function syncLenisToHeroVideo(lenisInstance) {
+          const heroST = ScrollTrigger.getById("heroIntroScrub");
+          if (!heroST || !lenisInstance) return;
+          lenisInstance.scrollTo(heroST.end, { immediate: true });
+        }
+
+        function initHeroIntroReveal(onReady) {
+          const scrollRoot = document.getElementById("heroIntroScroll");
+          const pin = document.querySelector(".hero-intro-pin");
+          const hero = pin && pin.querySelector(".dream-hero");
+          const cream = pin && pin.querySelector(".hero-intro-cream");
+          const video = pin && pin.querySelector(".hero-intro-video");
+          const heroUi = pin && pin.querySelectorAll(".dream-content, .brand--hero-top, .hero-shadows, .overlay");
+
+          if (!scrollRoot || !pin || !hero || !cream || !video) {
+            if (typeof onReady === "function") onReady();
+            return;
+          }
+
+          if (window.lenis && typeof window.lenis.destroy === "function") {
+            window.lenis.destroy();
+          }
+          window.lenis = null;
+          document.documentElement.classList.remove("lenis", "lenis-smooth");
+          document.body.style.removeProperty("overflow");
+
+          let heroActive = true;
+          let revealStarted = false;
+          const wheelReadyAt = Date.now() + 400;
+
+          function applyHeroProgress(progress) {
+            const p = gsap.utils.clamp(0, 1, progress);
+            const uiFade = gsap.utils.clamp(0, 1, p / 0.2);
+            const heroFade = gsap.utils.clamp(0, 1, p / 0.72);
+            const creamFade = gsap.utils.clamp(0, 1, (p - 0.08) / 0.55);
+            const videoFade = gsap.utils.clamp(0, 1, (p - 0.18) / 0.62);
+
+            gsap.set(heroUi, { opacity: 1 - uiFade, y: -12 * uiFade });
+            gsap.set(hero, { opacity: 1 - heroFade });
+            gsap.set(cream, { opacity: creamFade });
+            gsap.set(video, {
+              opacity: videoFade,
+              scale: 0.985 + 0.015 * videoFade,
+              pointerEvents: videoFade > 0.55 ? "auto" : "none",
+            });
+
+            loadHeroIntroVideo();
+            video.classList.toggle("is-active", p > 0.45);
+
+            const frame = video.querySelector(".intro-video-frame");
+            const iframe = video.querySelector("iframe");
+            if (frame && p > 0.45 && iframe?.dataset.loaded === "1") {
+              frame.classList.add("is-playing");
+            }
+          }
+
+          applyHeroProgressGlobal = applyHeroProgress;
+
+          function finishHeroReveal() {
+            if (!heroActive) return;
+            heroActive = false;
+            gsap.killTweensOf(hero);
+            gsap.killTweensOf(cream);
+            gsap.killTweensOf(video);
+            if (heroUi && heroUi.length) gsap.killTweensOf(heroUi);
+            applyHeroProgress(1);
+            scrollRoot.classList.remove("is-locked");
+            scrollRoot.classList.add("is-complete");
+            document.documentElement.classList.remove("hero-intro-locked");
+            document.body.style.removeProperty("overflow");
+            window.removeEventListener("wheel", onHeroWheel, true);
+            // Dříve tu byl nucený skok scrollu (syncToVideo), což dělalo "sekané" odjíždění.
+            // Efekt zůstává, jen bez násilného scrollTo.
+            if (typeof onReady === "function") onReady({ syncToVideo: false });
+          }
+
+          function startRevealAnimation() {
+            if (revealStarted || !heroActive) return;
+            revealStarted = true;
+            window.removeEventListener("wheel", onHeroWheel, true);
+
+            const state = { p: 0 };
+            gsap.to(state, {
+              p: 1,
+              duration: 2.35,
+              ease: "power1.inOut",
+              onUpdate: () => applyHeroProgress(state.p),
+              onComplete: finishHeroReveal,
+            });
+          }
+
+          function onHeroWheel(event) {
+            if (!heroActive || !event.isTrusted) return;
+            // Když je hero "locked" (fixed + overflow hidden), nativní scroll umí škubnout
+            // a následně se vrátit zpět. Zablokujeme ho úplně, ať je přechod stabilní.
+            try {
+              event.preventDefault();
+            } catch (_) {}
+            if (Date.now() < wheelReadyAt) return;
+            if (event.deltaY <= 0) return;
+            startRevealAnimation();
+          }
+
+          scrollRoot.classList.add("is-locked");
+          document.documentElement.classList.add("hero-intro-locked");
+          applyHeroProgress(0);
+          loadHeroIntroVideo();
+
+          window.addEventListener("wheel", onHeroWheel, { passive: false, capture: true });
+        }
+
+        function scrollToRegistrationForm(lenisInstance) {
+          ScrollTrigger.refresh();
+          const el = document.getElementById("registrace");
+          if (!el) return;
+
+          if (lenisInstance && typeof lenisInstance.scrollTo === "function") {
+            lenisInstance.scrollTo(el, {
+              offset: -24,
+              duration: 1.35,
+              easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
+            });
+            return;
+          }
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        function bindRegistrationCtaScroll(lenisInstance) {
+          document.querySelectorAll('a[href="#registrace"]').forEach((link) => {
+            link.addEventListener("click", (event) => {
+              const heroScroll = document.getElementById("heroIntroScroll");
+              if (heroScroll && !heroScroll.classList.contains("is-complete")) return;
+              event.preventDefault();
+              scrollToRegistrationForm(lenisInstance);
+            });
+          });
+        }
+
+        function startLenisAndHow(syncToVideo) {
+          loadLenisScript().then(() => {
+            // Hero intro řešíme jen jednorázovým reveal efektem.
+            // Další pin/scrub podle scrollu zde neděláme, aby se hero samo "nevracelo" zpět.
+
+            if (typeof Lenis === "undefined") {
+              if (typeof window.initHowScrolly === "function") window.initHowScrolly(null);
+              bindRegistrationCtaScroll(null);
+              return;
+            }
+
+            lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
+            window.lenis = lenis;
+            lenis.on("scroll", ScrollTrigger.update);
+            gsap.ticker.add((t) => lenis.raf(t * 1000));
+            gsap.ticker.lagSmoothing(0);
+
+            const scrollRoot = document.documentElement;
+            ScrollTrigger.scrollerProxy(scrollRoot, {
+              scrollTop(value) {
+                if (arguments.length) {
+                  lenis.scrollTo(value, { immediate: true });
+                }
+                return lenis.scroll;
+              },
+              getBoundingClientRect() {
+                return {
+                  top: 0,
+                  left: 0,
+                  width: window.innerWidth,
+                  height: window.innerHeight,
+                };
+              },
+            });
+            ScrollTrigger.defaults({ scroller: scrollRoot });
+
+            if (typeof window.initHowScrolly === "function") window.initHowScrolly(lenis);
+            lenis.start();
+
+            // Nevracíme stránku na začátek – při odjíždění z hero by to skákalo zpět nahoru.
+
+            // Dvojitý RAF = stabilnější layout před refresh (méně "jank" na Windows).
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                ScrollTrigger.refresh();
+                bindRegistrationCtaScroll(lenis);
+              });
+            });
+          });
+        }
+
+        function bootSite() {
+          if ("scrollRestoration" in history) {
+            history.scrollRestoration = "manual";
+          }
+
+          gsap.registerPlugin(ScrollTrigger);
+          document.body.style.removeProperty("overflow");
+
+          initHeroIntroReveal((opts) => {
+            startLenisAndHow(Boolean(opts && opts.syncToVideo));
+          });
+        }
+
+        function startMain() {
+          const runBoot = () => bootSite();
+          if (document.readyState === "complete") {
+            runBoot();
+          } else {
+            window.addEventListener("load", runBoot, { once: true });
+          }
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", startMain, { once: true });
+        } else {
+          startMain();
+        }
+      })();
+    </script>
+    <script src="how-scrolly.js?v=20260602-8"></script>
+    <script src="script.js?v=20260602-16" defer></script>
   </body>
 </html>
