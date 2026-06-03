@@ -1004,34 +1004,6 @@
 
         let applyHeroProgressGlobal = null;
 
-        function setupHeroScrollScrub() {
-          const scrollRoot = document.getElementById("heroIntroScroll");
-          const pin = document.querySelector(".hero-intro-pin");
-          if (!scrollRoot || !pin || !applyHeroProgressGlobal) return null;
-
-          ScrollTrigger.getById("heroIntroScrub")?.kill();
-
-          const endDistance = () => window.innerHeight;
-
-          return ScrollTrigger.create({
-            id: "heroIntroScrub",
-            trigger: scrollRoot,
-            start: "top top",
-            end: () => `+=${endDistance()}`,
-            pin,
-            scrub: 0.65,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            onUpdate: (self) => applyHeroProgressGlobal(self.progress),
-          });
-        }
-
-        function syncLenisToHeroVideo(lenisInstance) {
-          const heroST = ScrollTrigger.getById("heroIntroScrub");
-          if (!heroST || !lenisInstance) return;
-          lenisInstance.scrollTo(heroST.end, { immediate: true });
-        }
-
         function initHeroIntroReveal(onReady) {
           const scrollRoot = document.getElementById("heroIntroScroll");
           const pin = document.querySelector(".hero-intro-pin");
@@ -1097,6 +1069,7 @@
             document.documentElement.classList.remove("hero-intro-locked");
             document.body.style.removeProperty("overflow");
             window.removeEventListener("wheel", onHeroWheel, true);
+            ScrollTrigger.getById("heroIntroScrub")?.kill();
             // Dříve tu byl nucený skok scrollu (syncToVideo), což dělalo "sekané" odjíždění.
             // Efekt zůstává, jen bez násilného scrollTo.
             if (typeof onReady === "function") onReady({ syncToVideo: false });
@@ -1166,11 +1139,9 @@
 
         function startLenisAndHow(syncToVideo) {
           loadLenisScript().then(() => {
-            // Hero intro řešíme jen jednorázovým reveal efektem.
-            // Další pin/scrub podle scrollu zde neděláme, aby se hero samo "nevracelo" zpět.
-
             if (typeof Lenis === "undefined") {
               if (typeof window.initHowScrolly === "function") window.initHowScrolly(null);
+              ScrollTrigger.refresh();
               bindRegistrationCtaScroll(null);
               return;
             }
@@ -1203,9 +1174,6 @@
             if (typeof window.initHowScrolly === "function") window.initHowScrolly(lenis);
             lenis.start();
 
-            // Nevracíme stránku na začátek – při odjíždění z hero by to skákalo zpět nahoru.
-
-            // Dvojitý RAF = stabilnější layout před refresh (méně "jank" na Windows).
             requestAnimationFrame(() => {
               requestAnimationFrame(() => {
                 ScrollTrigger.refresh();
@@ -1244,7 +1212,7 @@
         }
       })();
     </script>
-    <script src="how-scrolly.js?v=20260602-8"></script>
+    <script src="how-scrolly.js?v=20260602-10"></script>
     <script src="script.js?v=20260602-16" defer></script>
   </body>
 </html>
